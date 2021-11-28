@@ -7,16 +7,16 @@ using System.Text;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class JItemClass
+public class Item
 {
     public string itemCode; // itemCode
     public string itemName; // itemNameInKorean
 
     public Dictionary<string, int> statDegree;
     public Dictionary<string, bool> canShowEvents;
-    public JItemClass() { }
+    public Item() { }
 
-    public JItemClass(bool isSet)
+    public Item(bool isSet)
     {
         itemCode = "4hwnx01jdxj";
         itemName = "의택이의 초록오른손";
@@ -48,12 +48,12 @@ public class JItemClass
 [System.Serializable]
 public class JItemClassArray
 {
-    public JItemClass[] jItemClasses;
+    public Item[] jItemClasses;
 }
 
 public class JsonManager : MonoBehaviour
 {
-    public Dictionary<string, JItemClass> itemsJsonDict;
+    public Dictionary<string, Item> itemsJsonDict;
     public string itemFileName = "ItemsInfo";
 
 
@@ -101,7 +101,7 @@ public class JsonManager : MonoBehaviour
         return JsonUtility.FromJson<T>(jsonData);
     }
 
-    public void ItemInsert(JItemClass item)
+    public void ItemInsert(Item item)
     {
         itemsJsonDict[item.itemCode] = item;
     }
