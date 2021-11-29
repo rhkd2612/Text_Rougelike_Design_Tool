@@ -7,45 +7,6 @@ using System.Text;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class Item
-{
-    public string itemCode; // itemCode
-    public string itemName; // itemNameInKorean
-
-    public Dictionary<string, int> statDegree;
-    public Dictionary<string, bool> canShowEvents;
-    public Item() { }
-
-    public Item(bool isSet)
-    {
-        itemCode = "4hwnx01jdxj";
-        itemName = "의택이의 초록오른손";
-
-        statDegree["hp"] = 3;
-        statDegree["power"] = 5;
-
-        canShowEvents["0"] = true;
-    }
-
-    public void Print()
-    {
-        Debug.Log("itemCode = " + itemCode);
-        Debug.Log("itemName = " + itemName);
-
-        foreach(var idx in statDegree)
-        {
-            Debug.Log(string.Format("statDegree[{0}] = {1}", idx.Key, idx.Value));
-        }
-
-        foreach (var idx in canShowEvents)
-        {
-            Debug.Log(string.Format("canShowEvents[{0}] = {1}", idx.Key, idx.Value));
-        }
-    }
-}
-
-
-[System.Serializable]
 public class JItemClassArray
 {
     public Item[] jItemClasses;
@@ -53,12 +14,35 @@ public class JItemClassArray
 
 public class JsonManager : MonoBehaviour
 {
-    public Dictionary<string, Item> itemsJsonDict;
+    private static JsonManager instance = null;
+    public Dictionary<string, Item> itemsDict;
     public string itemFileName = "ItemsInfo";
 
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+            Destroy(this.gameObject);
+    }
+
+    public static JsonManager Instance
+    {
+        get
+        {
+            if (instance == null)
+                return null;
+            return instance;
+        }
+    }
 
     void Start()
     {
+        itemsDict = new Dictionary<string, Item>();
+
         if (System.IO.File.Exists(itemFileName + ".json"))
         {
             Debug.Log("ItemJsonFile Exists");
@@ -67,7 +51,7 @@ public class JsonManager : MonoBehaviour
 
             foreach (var cur in jItems.jItemClasses)
             {
-                itemsJsonDict[cur.itemCode] = cur;
+                itemsDict[cur.itemCode] = cur;
                 cur.Print();
             }
         }
@@ -101,14 +85,9 @@ public class JsonManager : MonoBehaviour
         return JsonUtility.FromJson<T>(jsonData);
     }
 
-    public void ItemInsert(Item item)
-    {
-        itemsJsonDict[item.itemCode] = item;
-    }
-
     public void JsonDataSave()
     {
-        foreach (var cur in itemsJsonDict)
+        foreach (var cur in itemsDict)
         {
             string jsonData = ObjectToJson(cur.Value);
             CreateJsonFile(Application.dataPath, itemFileName, jsonData);
