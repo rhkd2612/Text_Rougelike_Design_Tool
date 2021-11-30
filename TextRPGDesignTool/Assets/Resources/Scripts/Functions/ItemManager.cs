@@ -54,13 +54,13 @@ public class Item
     }
 }
 
-public class ItemInsert : MonoBehaviour
+public class ItemManager : MonoBehaviour
 {
     public GameObject itemPopup;
     public Item curItem = new Item(true);
     private string lastName = "";
 
-    private void curItemClear()
+    private void CurItemClear()
     {
         curItem = new Item(true);
     }
@@ -80,7 +80,7 @@ public class ItemInsert : MonoBehaviour
         curItem.itemExplain = exp;
     }
 
-    public void ItemStatInsert(string stat,int degree)
+    public void ItemStatManager(string stat,int degree)
     {
         curItem.statDegree[stat] = degree;        
     }
@@ -101,7 +101,7 @@ public class ItemInsert : MonoBehaviour
         JsonManager.Instance.itemsDict[curItem.itemCode] = curItem;
         JsonManager.Instance.itemsDict[curItem.itemCode].Print();
 
-        curItemClear();
+        CurItemClear();
 
         itemPopup.SetActive(false);
     }

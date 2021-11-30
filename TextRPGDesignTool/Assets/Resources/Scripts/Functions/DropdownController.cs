@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class DropdownController : MonoBehaviour
 {
-    public ItemInsert itemInsert;
+    public ItemManager itemManager;
     public Transform par;
     public GameObject newDropdownObj;
     public GameObject dropdownPref;
@@ -21,8 +21,7 @@ public class DropdownController : MonoBehaviour
 
     void Start()
     {
-        
-        item = itemInsert.curItem;
+        item = itemManager.curItem;
         statDropdown = newDropdownObj.transform.Find("stat").GetComponent<Dropdown>();
         degreeDropdown = newDropdownObj.transform.Find("degree").GetComponent<Dropdown>();
         AddDropdownOptions();
@@ -43,13 +42,13 @@ public class DropdownController : MonoBehaviour
         statDropdown.AddOptions(list);
     }
 
-    void resetNewDropDown()
+    void ResetNewDropDown()
     {
         statDropdown.value = 0;
         degreeDropdown.value = 0;
     }
 
-    public void insertNewDropdown()
+    public void InsertNewDropdown()
     {
         if (degreeDropdown.value == 0 || item.statDegree.ContainsKey(statDropdown.options[statCount].text) && item.statDegree[statDropdown.options[statCount].text] > 0)
         {
@@ -66,13 +65,14 @@ public class DropdownController : MonoBehaviour
         newPref.transform.Find("Text").GetComponent<Text>().text = statDropdown.options[statCount].text;
         newPref.transform.Find("DropDown").GetComponent<Dropdown>().value = degreeCount;
         newPref.transform.Find("Text").GetComponent<Text>().color = colorList[pos % colorList.Length];
+        newPref.SetActive(true);
 
         item.statDegree[statDropdown.options[statCount].text] = degreeCount;
 
-        resetNewDropDown();
+        ResetNewDropDown();
     }
 
-    public void deleteDropdown(Transform tr)
+    public void DeleteDropdown(Transform tr)
     {
         Debug.Log(tr.Find("Text").GetComponent<Text>().text);
 
@@ -80,14 +80,14 @@ public class DropdownController : MonoBehaviour
 
         Destroy(tr.gameObject);
 
-        resetNewDropDown();
+        ResetNewDropDown();
     }
 
-    public void setStat(int i)
+    public void SetStat(int i)
     {
         statCount = i;
     }
-    public void setDegree(int i)
+    public void SetDegree(int i)
     {
         degreeCount = i;
 

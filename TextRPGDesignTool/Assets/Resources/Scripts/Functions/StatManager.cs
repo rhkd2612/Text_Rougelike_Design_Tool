@@ -38,13 +38,13 @@ public class Stat
     }
 }
 
-public class StatInsert : MonoBehaviour
+public class StatManager : MonoBehaviour
 {
     public GameObject statPopup;
     public Stat curStat = new Stat(true);
     private string lastName = "";
 
-    private void curStatClear()
+    private void CurStatClear()
     {
         curStat = new Stat(true);
     }
@@ -80,7 +80,7 @@ public class StatInsert : MonoBehaviour
         JsonManager.Instance.statsDict[curStat.statCode] = curStat;
         JsonManager.Instance.statsDict[curStat.statCode].Print();
 
-        curStatClear();
+        CurStatClear();
         statPopup.SetActive(false);
     }
 }
