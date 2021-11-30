@@ -13,15 +13,11 @@ public class Item
     public Dictionary<string, bool> canShowEvents;
     public Item() 
     {
+        itemCode = "";
+        itemName = "";
+        itemExplain = "";
         statDegree = new Dictionary<string, int>();
         canShowEvents = new Dictionary<string, bool>();
-
-        itemCode = "4hwnx01jdxj";
-        itemName = "의택이의 초록오른손";
-        itemExplain = "의택이가 고추장아찌를 조져서 손이 초래졌다.. 오른손과 데이트를 하지 못한 의택이는 힘과 체력이 넘친다..!";
-
-        statDegree["hp"] = 3;
-        statDegree["power"] = 5;
 
         canShowEvents["0"] = true;
     }
@@ -35,6 +31,8 @@ public class Item
             itemExplain = "";
             statDegree = new Dictionary<string, int>();
             canShowEvents = new Dictionary<string, bool>();
+
+            canShowEvents["0"] = true;
         }
     }
 
@@ -42,6 +40,7 @@ public class Item
     {
         Debug.Log("itemCode = " + itemCode);
         Debug.Log("itemName = " + itemName);
+        Debug.Log("itemExplain = " + itemExplain);
 
         foreach (var idx in statDegree)
         {
@@ -57,23 +56,13 @@ public class Item
 
 public class ItemInsert : MonoBehaviour
 {
+    public GameObject itemPopup;
     public Item curItem = new Item(true);
     private string lastName = "";
-
-    private void Start()
-    {
-        curItem.Print();
-    }
 
     private void curItemClear()
     {
         curItem = new Item(true);
-    }
-
-    void NameChangeCheck()
-    {
-        if (curItem.itemCode != lastName)
-            curItemClear();
     }
 
     public void SetItemCode(string code)
@@ -103,9 +92,17 @@ public class ItemInsert : MonoBehaviour
 
     public void InsertItem()
     {
+        if(curItem.itemCode == string.Empty || curItem.itemName == string.Empty || curItem.itemExplain == string.Empty ||  JsonManager.Instance.itemsDict.ContainsKey(curItem.itemCode))
+        {
+            Debug.Log("Failed Create, Already Same Item exists or Code, Name or Explain is empty.");
+            return;
+        }
+
         JsonManager.Instance.itemsDict[curItem.itemCode] = curItem;
         JsonManager.Instance.itemsDict[curItem.itemCode].Print();
 
         curItemClear();
+
+        itemPopup.SetActive(false);
     }
 }

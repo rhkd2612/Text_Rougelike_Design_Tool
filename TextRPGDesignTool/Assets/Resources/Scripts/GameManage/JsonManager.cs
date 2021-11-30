@@ -12,22 +12,22 @@ public class JItemClassArray
     public Item[] jItemClasses;
 }
 
+[System.Serializable]
+public class JStatClassArray
+{
+    public Stat[] jStatClasses;
+}
+
 public class JsonManager : MonoBehaviour
 {
     private static JsonManager instance = null;
+    
+    public Dictionary<string, Stat> statsDict;
     public Dictionary<string, Item> itemsDict;
+
+    public string statFileName = "StatInfo";
     public string itemFileName = "ItemsInfo";
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-            Destroy(this.gameObject);
-    }
 
     public static JsonManager Instance
     {
@@ -39,9 +39,37 @@ public class JsonManager : MonoBehaviour
         }
     }
 
-    void Start()
+    void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+            Destroy(this.gameObject);
+
+        statsDict = new Dictionary<string, Stat>();
         itemsDict = new Dictionary<string, Item>();
+
+        if (System.IO.File.Exists(statFileName + ".json"))
+        {
+            Debug.Log("StatJsonFile Exists");
+
+            var jStats = LoadJsonFile<JStatClassArray>(Application.dataPath, itemFileName);
+
+            foreach (var cur in jStats.jStatClasses)
+            {
+                statsDict[cur.statCode] = cur;
+            }
+        }
+        else
+        {
+            Debug.Log("statDict Create");
+
+            statsDict["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다");
+            statsDict["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다");
+        }
 
         if (System.IO.File.Exists(itemFileName + ".json"))
         {
