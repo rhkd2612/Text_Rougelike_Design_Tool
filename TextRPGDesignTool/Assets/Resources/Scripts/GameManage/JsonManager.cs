@@ -18,17 +18,108 @@ public class JStatClassArray
     public Stat[] jStatClasses;
 }
 
+[System.Serializable]
 public class Info
 {
+    public string code;
+    public string name;
+    public string explain;
 
+    public virtual void Print() { }
+
+    public virtual void SaveInJson() { }
 }
+
+[System.Serializable]
+public class Stat : Info
+{
+    public bool isDefaultStat;
+
+    public Stat(bool isSet)
+    {
+        if (isSet)
+        {
+            code = "";
+            name = "";
+            explain = "";
+            isDefaultStat = true;
+        }
+    }
+
+    public Stat(string c, string n, string e, bool isDefault = true)
+    {
+        code = c;
+        name = n;
+        explain = e;
+        isDefaultStat = isDefault;
+    }
+
+    public override void Print()
+    {
+        Debug.Log("Code = " + code);
+        Debug.Log("Name = " + name);
+        Debug.Log("Explain = " + explain);
+        Debug.Log("isDefaultStat = " + isDefaultStat);
+    }
+}
+
+[System.Serializable]
+public class Item : Info
+{
+    public SortedList<string, int> statDegree;
+    public SortedList<string, bool> canShowEvents;
+    public Item()
+    {
+        code = "";
+        name = "";
+        explain = "";
+        statDegree = new SortedList<string, int>();
+        canShowEvents = new SortedList<string, bool>();
+
+        canShowEvents["0"] = true;
+    }
+
+    public Item(bool isSet)
+    {
+        if (isSet)
+        {
+            code = "";
+            name = "";
+            explain = "";
+            statDegree = new SortedList<string, int>();
+            canShowEvents = new SortedList<string, bool>();
+
+            canShowEvents["0"] = true;
+        }
+    }
+
+    public override void Print()
+    {
+        Debug.Log("Code = " + code);
+        Debug.Log("Name = " + name);
+        Debug.Log("Explain = " + explain);
+
+        foreach (var idx in statDegree)
+        {
+            Debug.Log(string.Format("statDegree[{0}] = {1}", idx.Key, idx.Value));
+        }
+
+        foreach (var idx in canShowEvents)
+        {
+            Debug.Log(string.Format("canShowEvents[{0}] = {1}", idx.Key, idx.Value));
+        }
+    }
+}
+
 
 public class JsonManager : MonoBehaviour
 {
     private static JsonManager instance = null;
     
-    public Dictionary<string, Stat> statsDict;
-    public Dictionary<string, Item> itemsDict;
+    public SortedList<string, Info> statsList;
+    public SortedList<string, Info> itemsList;
+
+    public List<SortedList<string, Info>> sLists = new List<SortedList<string, Info>>();
 
     public string statFileName = "StatInfo";
     public string itemFileName = "ItemsInfo";
@@ -54,8 +145,12 @@ public class JsonManager : MonoBehaviour
         else
             Destroy(this.gameObject);
 
-        statsDict = new Dictionary<string, Stat>();
-        itemsDict = new Dictionary<string, Item>();
+        statsList = new SortedList<string, Info>();
+        itemsList = new SortedList<string, Info>();
+
+        sLists.Add(statsList);
+        sLists.Add(itemsList);
+        // + char, event
 
         if (System.IO.File.Exists(statFileName + ".json"))
         {
@@ -65,15 +160,15 @@ public class JsonManager : MonoBehaviour
 
             foreach (var cur in jStats.jStatClasses)
             {
-                statsDict[cur.statCode] = cur;
+                statsList[cur.code] = cur;
             }
         }
         else
         {
             Debug.Log("statDict Create");
 
-            statsDict["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다");
-            statsDict["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다");
+            statsList["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다");
+            statsList["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다");
         }
 
         if (System.IO.File.Exists(itemFileName + ".json"))
@@ -84,7 +179,7 @@ public class JsonManager : MonoBehaviour
 
             foreach (var cur in jItems.jItemClasses)
             {
-                itemsDict[cur.itemCode] = cur;
+                itemsList[cur.code] = cur;
                 cur.Print();
             }
         }
@@ -120,7 +215,7 @@ public class JsonManager : MonoBehaviour
 
     public void JsonDataSave()
     {
-        foreach (var cur in itemsDict)
+        foreach (var cur in itemsList)
         {
             string jsonData = ObjectToJson(cur.Value);
             CreateJsonFile(Application.dataPath, itemFileName, jsonData);

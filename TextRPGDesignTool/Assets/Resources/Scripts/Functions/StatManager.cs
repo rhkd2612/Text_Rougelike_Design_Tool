@@ -1,42 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-[System.Serializable]
-public class Stat
-{
-    public string statCode;
-    public string statName;
-    public string statExplain;
-    public bool isDefaultStat;
-
-    public Stat(bool isSet)
-    {
-        if (isSet)
-        {
-            statCode = "";
-            statName = "";
-            statExplain = "";
-            isDefaultStat = true;
-        }
-    }
-
-    public Stat(string code, string name, string explain, bool isDefault = true)
-    {
-        statCode = code;
-        statName = name;
-        statExplain = explain;
-        isDefaultStat = isDefault;
-    }
-
-    public void Print()
-    {
-        Debug.Log("statCode = " + statCode);
-        Debug.Log("statName = " + statName);
-        Debug.Log("statExplain = " + statExplain);
-        Debug.Log("isDefaultStat = " + isDefaultStat);
-    }
-}
+using UnityEngine.UI;
 
 public class StatManager : MonoBehaviour
 {
@@ -51,17 +16,17 @@ public class StatManager : MonoBehaviour
 
     public void SetStatCode(string code)
     {
-        curStat.statCode = code;
+        curStat.code = code;
     }
 
     public void SetStatName(string name)
     {
-        curStat.statName = name;
+        curStat.name = name;
     }
 
     public void SetStatExplain(string exp)
     {
-        curStat.statExplain = exp;
+        curStat.explain = exp;
     }
 
     public void SetDefaultStat(bool b)
@@ -69,18 +34,24 @@ public class StatManager : MonoBehaviour
         curStat.isDefaultStat = b;
     }
 
+    public void DeleteStat(Transform tr)
+    {
+        JsonManager.Instance.statsList.Remove(tr.Find("Code").GetComponent<Text>().text);
+        Destroy(tr.gameObject);
+    }
+
     public void InsertStat()
     {
-        if (curStat.statCode == string.Empty || curStat.statName == string.Empty || curStat.statExplain == string.Empty || JsonManager.Instance.itemsDict.ContainsKey(curStat.statCode))
+        if (curStat.code == string.Empty || curStat.name == string.Empty || curStat.explain == string.Empty || JsonManager.Instance.itemsList.ContainsKey(curStat.code))
         {
             Debug.Log("Failed Create, Already Same Stat exists or Code, Name or Explain is empty.");
             return;
         }
 
-        JsonManager.Instance.statsDict[curStat.statCode] = curStat;
-        JsonManager.Instance.statsDict[curStat.statCode].Print();
+        JsonManager.Instance.statsList[curStat.code] = curStat;
+        JsonManager.Instance.statsList[curStat.code].Print();
 
-        //BodyController.Instance.UpdateAll();
+        BodyController.Instance.AddBody(curStat,STATUS.STAT, JsonManager.Instance.statsList.IndexOfKey(curStat.code));
 
         CurStatClear();
         statPopup.SetActive(false);

@@ -33,7 +33,7 @@ public class DropdownController : MonoBehaviour
 
         List<Dropdown.OptionData> list = new List<Dropdown.OptionData>();
 
-        foreach(var s in JsonManager.Instance.statsDict.Keys)
+        foreach(var s in JsonManager.Instance.statsList.Keys)
         {
             Dropdown.OptionData od = new Dropdown.OptionData(s);
             list.Add(od);

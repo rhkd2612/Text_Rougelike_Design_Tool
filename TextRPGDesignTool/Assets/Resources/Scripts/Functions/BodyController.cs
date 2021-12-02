@@ -50,89 +50,56 @@ public class BodyController : MonoBehaviour
     {
         bodyCount = bodies.Length;
 
-        BodyCreate();
+        CreateBody();
     }
 
-
-    void BodyCreate()
+    void CreateBody()
     {
         for (int i = 0; i < bodyCount; i++)
         {
-            GameObject gb = infoes[i];
-            STATUS status = (STATUS)i;
+            if (i >= JsonManager.Instance.sLists.Count)
+                break;
 
-            switch (status)
+            var sl = JsonManager.Instance.sLists[i];
+            int sCount = 0;
+
+            foreach(var cur in sl)
             {
-                case STATUS.STAT:
-                    foreach (var cur in JsonManager.Instance.statsDict)
-                    {
-                        StatBodyAdd(gb, cur);
-                        bodySize[i]++;
-                    }
-                    break;
-                case STATUS.ITEM:
-                    foreach (var cur in JsonManager.Instance.itemsDict)
-                    {
-                        ItemBodyAdd(gb, cur);
-                        bodySize[i]++;
-                    }
-                    break;
-                    /*case STATUS.CHARACTER:
-                        foreach (KeyValuePair<string, Char> cur in JsonManager.Instance.statsDict)
-                            StatBodyAdd(gb, cur);
-                        break;
-                    case STATUS.EVENT:
-                        foreach (KeyValuePair<string, Event> cur in JsonManager.Instance.statsDict)
-                            EventBodyAdd(gb, cur);
-                        break;
-                    */
+                AddBody(cur.Value, (STATUS)i, sCount++);
+                bodySize[i]++;
             }
         }
     }
 
-    public void UpdateAllBodies()
+    public void AddBody(Info cur, STATUS status, int nth)
     {
-       
-    }
-
-    void StatBodyAdd(GameObject gb, KeyValuePair<string, Stat> cur)
-    {
-        GameObject newPref = Instantiate(gb, infoPars[(int)curStatus]);
+        GameObject newPref = Instantiate(infoes[(int)status], infoPars[(int)curStatus]);
         newPref.transform.localScale = new Vector3(1, 1, 1);
-        newPref.transform.Find("Code").GetComponent<Text>().text = cur.Value.statCode;
-        newPref.transform.Find("Name").GetComponent<Text>().text = cur.Value.statName;
-        newPref.transform.Find("Explain").GetComponent<InputField>().text = cur.Value.statExplain;
-        newPref.transform.Find("Toggle").GetComponent<Toggle>().isOn = cur.Value.isDefaultStat;
+        newPref.name = infoes[(int)status].name + nth.ToString();
+        newPref.transform.SetSiblingIndex(nth);
+        newPref.transform.Find("Code").GetComponent<Text>().text = cur.code;
+        newPref.transform.Find("Name").GetComponent<Text>().text = cur.name;
+        newPref.transform.Find("Explain").GetComponent<InputField>().text = cur.explain;
         newPref.SetActive(true);
-    }
 
-    void ItemBodyAdd(GameObject gb, KeyValuePair<string, Item> cur)
-    {
-        GameObject newPref = Instantiate(gb, infoPars[(int)curStatus]);
-        newPref.transform.localScale = new Vector3(1, 1, 1);
-        newPref.transform.Find("Code").GetComponent<Text>().text = cur.Value.itemCode;
-        newPref.transform.Find("Name").GetComponent<Text>().text = cur.Value.itemName;
-        newPref.transform.Find("Explain").GetComponent<InputField>().text = cur.Value.itemExplain;
-        newPref.SetActive(true);
+        switch(status)
+        {
+            case STATUS.STAT:
+                newPref.transform.Find("Toggle").GetComponent<Toggle>().isOn = ((Stat)cur).isDefaultStat;
+                break;
+            case STATUS.ITEM:
+                break;
+            case STATUS.CHARACTER:
+                break;
+            case STATUS.EVENT:
+                break;
+        }
     }
-    //void CharBodyAdd(GameObject gb, KeyValuePair<string, Char> cur)
-    //{
-    //    GameObject newPref = Instantiate(gb, infoPars[(int)curStatus]);
-    //    newPref.transform.localScale = new Vector3(1, 1, 1);
-    //    newPref.transform.Find("Code").GetComponent<Text>().text = cur.Value.statCode;
-    //    newPref.transform.Find("Name").GetComponent<Text>().text = cur.Value.statName;
-    //    newPref.transform.Find("Explain").GetComponent<InputField>().text = cur.Value.statExplain;
-    //    newPref.transform.Find("Toggle").GetComponent<Toggle>().isOn = cur.Value.isDefaultStat;
-    //    newPref.SetActive(true);
-    //}
-
-    //void EventBodyAdd(GameObject gb, KeyValuePair<string, Event> cur)
-    //{
-    //}
 
     public void SetStatus(int i)
     {
         curStatus = (STATUS)i;
+        ChangeBody();
     }
 
     public void ChangeBody()
@@ -149,7 +116,7 @@ public class BodyController : MonoBehaviour
         bodies[(int)curStatus].SetActive(true);
     }
 
-    public void CreateNewObject()
+    public void ShowPopups()
     {
         popups[(int)curStatus].SetActive(true);
     }
