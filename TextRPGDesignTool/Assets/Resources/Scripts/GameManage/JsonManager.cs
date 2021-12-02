@@ -35,15 +35,12 @@ public class Stat : Info
 {
     public bool isDefaultStat;
 
-    public Stat(bool isSet)
+    public Stat()
     {
-        if (isSet)
-        {
-            code = "";
-            name = "";
-            explain = "";
-            isDefaultStat = true;
-        }
+        code = "";
+        name = "";
+        explain = "";
+        isDefaultStat = true;
     }
 
     public Stat(string c, string n, string e, bool isDefault = true)
@@ -79,18 +76,13 @@ public class Item : Info
         canShowEvents["0"] = true;
     }
 
-    public Item(bool isSet)
+    public Item(string c, string n, string e, SortedList<string, int> sD, SortedList<string, bool> cO)
     {
-        if (isSet)
-        {
-            code = "";
-            name = "";
-            explain = "";
-            statDegree = new SortedList<string, int>();
-            canShowEvents = new SortedList<string, bool>();
-
-            canShowEvents["0"] = true;
-        }
+        code = c;
+        name = n;
+        explain = e;
+        statDegree = sD;
+        canShowEvents = cO;
     }
 
     public override void Print()
@@ -115,7 +107,7 @@ public class Item : Info
 public class JsonManager : MonoBehaviour
 {
     private static JsonManager instance = null;
-    
+
     public SortedList<string, Info> statsList;
     public SortedList<string, Info> itemsList;
 
@@ -167,8 +159,8 @@ public class JsonManager : MonoBehaviour
         {
             Debug.Log("statDict Create");
 
-            statsList["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다");
-            statsList["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다");
+            statsList["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다",false);
+            statsList["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다",false);
         }
 
         if (System.IO.File.Exists(itemFileName + ".json"))
@@ -182,6 +174,12 @@ public class JsonManager : MonoBehaviour
                 itemsList[cur.code] = cur;
                 cur.Print();
             }
+        }
+        else
+        {
+            Debug.Log("itemDict Create");
+
+            itemsList["scv"] = new Item("scv", "1", "1",null,null);
         }
     }
 

@@ -22,7 +22,6 @@ public class BodyController : MonoBehaviour
     public Transform[] infoPars;
 
     int bodyCount;
-    int[] bodySize = { 0 };
 
     private static BodyController instance = null;
     public static BodyController Instance
@@ -50,6 +49,7 @@ public class BodyController : MonoBehaviour
     {
         bodyCount = bodies.Length;
 
+        ChangeBody();
         CreateBody();
     }
 
@@ -63,17 +63,16 @@ public class BodyController : MonoBehaviour
             var sl = JsonManager.Instance.sLists[i];
             int sCount = 0;
 
+            Debug.Log(sl.Count);
+
             foreach(var cur in sl)
-            {
                 AddBody(cur.Value, (STATUS)i, sCount++);
-                bodySize[i]++;
-            }
         }
     }
 
     public void AddBody(Info cur, STATUS status, int nth)
     {
-        GameObject newPref = Instantiate(infoes[(int)status], infoPars[(int)curStatus]);
+        GameObject newPref = Instantiate(infoes[(int)status], infoPars[(int)status]);
         newPref.transform.localScale = new Vector3(1, 1, 1);
         newPref.name = infoes[(int)status].name + nth.ToString();
         newPref.transform.SetSiblingIndex(nth);
@@ -108,11 +107,6 @@ public class BodyController : MonoBehaviour
             if (i != (int)curStatus)
                 bodies[i].SetActive(false);
 
-        bodies[(int)curStatus].SetActive(true);
-    }
-
-    public void ShowBodies()
-    {
         bodies[(int)curStatus].SetActive(true);
     }
 

@@ -6,12 +6,12 @@ using UnityEngine.UI;
 public class StatManager : MonoBehaviour
 {
     public GameObject statPopup;
-    public Stat curStat = new Stat(true);
+    public Stat curStat = new Stat();
     private string lastName = "";
 
     private void CurStatClear()
     {
-        curStat = new Stat(true);
+        curStat = new Stat();
     }
 
     public void SetStatCode(string code)
@@ -34,7 +34,7 @@ public class StatManager : MonoBehaviour
         curStat.isDefaultStat = b;
     }
 
-    public void DeleteStat(Transform tr)
+    public void RemoveStat(Transform tr)
     {
         JsonManager.Instance.statsList.Remove(tr.Find("Code").GetComponent<Text>().text);
         Destroy(tr.gameObject);

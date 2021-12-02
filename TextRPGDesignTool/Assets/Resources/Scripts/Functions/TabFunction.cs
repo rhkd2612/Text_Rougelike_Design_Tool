@@ -9,11 +9,11 @@ public class TabFunction : MonoBehaviour
     public Button createButton;
     int count = 0;
 
-    void Start()
+    private void OnEnable()
     {
-        
+        foreach (var i in inputfields)
+            i.text = "";
     }
-
     void Update()
     {
         if(this.gameObject.activeInHierarchy)

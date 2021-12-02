@@ -1,17 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class ItemManager : MonoBehaviour
 {
     public GameObject itemPopup;
-    public Item curItem = new Item(true);
+    public Item curItem = new Item();
     private string lastName = "";
 
     private void CurItemClear()
     {
-        curItem = new Item(true);
+        curItem = new Item();
     }
 
     public void SetItemCode(string code)
@@ -37,6 +37,12 @@ public class ItemManager : MonoBehaviour
     public void ItemConditionInsert(string stat, int degree)
     {
         curItem.statDegree[stat] = degree;
+    }
+
+    public void RemoveItem(Transform tr)
+    {
+        JsonManager.Instance.statsList.Remove(tr.Find("Code").GetComponent<Text>().text);
+        Destroy(tr.gameObject);
     }
 
     public void InsertItem()
