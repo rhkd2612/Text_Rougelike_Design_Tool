@@ -80,6 +80,8 @@ public class StatManager : MonoBehaviour
         JsonManager.Instance.statsDict[curStat.statCode] = curStat;
         JsonManager.Instance.statsDict[curStat.statCode].Print();
 
+        //BodyController.Instance.UpdateAll();
+
         CurStatClear();
         statPopup.SetActive(false);
     }

@@ -18,6 +18,11 @@ public class JStatClassArray
     public Stat[] jStatClasses;
 }
 
+public class Info
+{
+
+}
+
 public class JsonManager : MonoBehaviour
 {
     private static JsonManager instance = null;
