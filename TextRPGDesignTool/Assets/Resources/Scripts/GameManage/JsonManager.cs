@@ -83,6 +83,16 @@ public class Item : Info
         explain = e;
         statDegree = sD;
         canShowEvents = cO;
+
+        if(sD == null)
+            statDegree = new SortedList<string, int>();
+        else
+            statDegree = sD;
+
+        if (cO == null)
+            canShowEvents = new SortedList<string, bool>();
+        else
+            canShowEvents = cO;
     }
 
     public override void Print()
@@ -91,15 +101,17 @@ public class Item : Info
         Debug.Log("Name = " + name);
         Debug.Log("Explain = " + explain);
 
-        foreach (var idx in statDegree)
-        {
-            Debug.Log(string.Format("statDegree[{0}] = {1}", idx.Key, idx.Value));
-        }
+        if (statDegree.Count > 0)
+            foreach (var idx in statDegree)
+            {
+                Debug.Log(string.Format("statDegree[{0}] = {1}", idx.Key, idx.Value));
+            }
 
-        foreach (var idx in canShowEvents)
-        {
-            Debug.Log(string.Format("canShowEvents[{0}] = {1}", idx.Key, idx.Value));
-        }
+        if (canShowEvents.Count > 0)
+            foreach (var idx in canShowEvents)
+            {
+                Debug.Log(string.Format("canShowEvents[{0}] = {1}", idx.Key, idx.Value));
+            }
     }
 }
 
@@ -159,8 +171,8 @@ public class JsonManager : MonoBehaviour
         {
             Debug.Log("statDict Create");
 
-            statsList["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다",false);
-            statsList["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다",false);
+            statsList["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다", false);
+            statsList["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다", false);
         }
 
         if (System.IO.File.Exists(itemFileName + ".json"))
@@ -179,7 +191,7 @@ public class JsonManager : MonoBehaviour
         {
             Debug.Log("itemDict Create");
 
-            itemsList["scv"] = new Item("scv", "1", "1",null,null);
+            itemsList["scv"] = new Item("scv", "1", "1", null, null);
         }
     }
 

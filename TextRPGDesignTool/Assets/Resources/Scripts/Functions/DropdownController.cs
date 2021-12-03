@@ -72,6 +72,20 @@ public class DropdownController : MonoBehaviour
         ResetNewDropDown();
     }
 
+    public void InsertNewDropdown(string st, int deg)
+    {
+        int pos = newDropdownObj.transform.GetSiblingIndex();
+
+        GameObject newPref = Instantiate(dropdownPref, par);
+        newPref.transform.SetSiblingIndex(pos);
+        newPref.transform.Find("Text").GetComponent<Text>().text = st;
+        newPref.transform.Find("DropDown").GetComponent<Dropdown>().value = deg;
+        newPref.transform.Find("Text").GetComponent<Text>().color = colorList[pos % colorList.Length];
+        newPref.SetActive(true);
+
+        ResetNewDropDown();
+    }
+
     public void DeleteDropdown(Transform tr)
     {
         Debug.Log(tr.Find("Text").GetComponent<Text>().text);

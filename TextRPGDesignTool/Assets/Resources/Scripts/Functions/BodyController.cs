@@ -21,6 +21,8 @@ public class BodyController : MonoBehaviour
     public GameObject[] infoes;
     public Transform[] infoPars;
 
+    public Transform itemMainInfo;
+
     int bodyCount;
 
     private static BodyController instance = null;
@@ -65,7 +67,7 @@ public class BodyController : MonoBehaviour
 
             Debug.Log(sl.Count);
 
-            foreach(var cur in sl)
+            foreach (var cur in sl)
                 AddBody(cur.Value, (STATUS)i, sCount++);
         }
     }
@@ -81,7 +83,7 @@ public class BodyController : MonoBehaviour
         newPref.transform.Find("Explain").GetComponent<InputField>().text = cur.explain;
         newPref.SetActive(true);
 
-        switch(status)
+        switch (status)
         {
             case STATUS.STAT:
                 newPref.transform.Find("Toggle").GetComponent<Toggle>().isOn = ((Stat)cur).isDefaultStat;
@@ -113,5 +115,37 @@ public class BodyController : MonoBehaviour
     public void ShowPopups()
     {
         popups[(int)curStatus].SetActive(true);
+    }
+
+    public void ShowItemInfo(Transform tr)
+    {
+        Item curItem = (Item)JsonManager.Instance.itemsList[tr.Find("Code").GetComponent<Text>().text];
+
+        curItem.Print();
+
+        itemMainInfo.Find("InputFields").Find("code").GetComponent<InputField>().text = curItem.code;
+        itemMainInfo.Find("InputFields").Find("name").GetComponent<InputField>().text = curItem.name;
+        itemMainInfo.Find("InputFields").Find("ingame_explain").GetComponent<InputField>().text = curItem.explain;
+
+        if (curItem.statDegree.Count > 0)
+        {
+            foreach (var c in curItem.statDegree)
+                itemMainInfo.Find("Stat").GetComponent<DropdownController>().InsertNewDropdown(c.Key, c.Value);
+        }
+    }
+
+    public void ShutIteminfo(Transform stats)
+    {
+        var now = stats.GetChild(0);
+
+        while (stats.childCount > 0 && now.name != "NewDropdown")
+        {
+            Destroy(now);
+
+            if (stats.childCount == 0)
+                break;
+
+            now = stats.GetChild(0);
+        }
     }
 }
