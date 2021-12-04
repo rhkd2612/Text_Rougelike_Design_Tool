@@ -19,6 +19,13 @@ public class ItemManager : MonoBehaviour
         curItem.code = code;
     }
 
+    public void ModifyItemSelect(Transform tr)
+    {
+        curItem = (Item)JsonManager.Instance.itemsList[tr.Find("Code").GetComponent<Text>().text];
+
+        curItem.Print();
+    }
+
     public void SetItemName(string name)
     {
         curItem.name = name;
@@ -47,16 +54,22 @@ public class ItemManager : MonoBehaviour
 
     public void InsertItem()
     {
-        if(curItem.code == string.Empty || curItem.name == string.Empty || curItem.explain == string.Empty ||  JsonManager.Instance.itemsList.ContainsKey(curItem.code))
+        if(curItem.code == string.Empty || curItem.name == string.Empty || curItem.explain == string.Empty)
         {
             Debug.Log("Failed Create, Already Same Item exists or Code, Name or Explain is empty.");
             return;
         }
 
+        if (JsonManager.Instance.itemsList.ContainsKey(curItem.code))
+            Debug.Log("Overlapped item");
+        else
+            BodyController.Instance.AddBody(curItem, STATUS.ITEM, JsonManager.Instance.itemsList.IndexOfKey(curItem.code));
+
+        curItem.Print();
+
         JsonManager.Instance.itemsList[curItem.code] = curItem;
         JsonManager.Instance.itemsList[curItem.code].Print();
 
-        BodyController.Instance.AddBody(curItem, STATUS.ITEM, JsonManager.Instance.itemsList.IndexOfKey(curItem.code));
 
         CurItemClear();
 

@@ -82,8 +82,6 @@ public class DropdownController : MonoBehaviour
         newPref.transform.Find("DropDown").GetComponent<Dropdown>().value = deg;
         newPref.transform.Find("Text").GetComponent<Text>().color = colorList[pos % colorList.Length];
         newPref.SetActive(true);
-
-        ResetNewDropDown();
     }
 
     public void DeleteDropdown(Transform tr)

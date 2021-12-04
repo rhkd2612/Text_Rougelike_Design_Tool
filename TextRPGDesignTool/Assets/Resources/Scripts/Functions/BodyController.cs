@@ -123,6 +123,7 @@ public class BodyController : MonoBehaviour
 
         curItem.Print();
 
+        itemMainInfo.gameObject.SetActive(true);
         itemMainInfo.Find("InputFields").Find("code").GetComponent<InputField>().text = curItem.code;
         itemMainInfo.Find("InputFields").Find("name").GetComponent<InputField>().text = curItem.name;
         itemMainInfo.Find("InputFields").Find("ingame_explain").GetComponent<InputField>().text = curItem.explain;
@@ -134,18 +135,30 @@ public class BodyController : MonoBehaviour
         }
     }
 
-    public void ShutIteminfo(Transform stats)
+    public void ShutIteminfo(Transform itemPopup)
     {
-        var now = stats.GetChild(0);
+        Transform stats = itemPopup.Find("Stat");
+        Transform conditions = itemPopup.Find("Condition");
 
-        while (stats.childCount > 0 && now.name != "NewDropdown")
+        if (stats.childCount == 0)
+            return;
+
+        List<GameObject> dList = new List<GameObject>();
+
+        for (int i = 0; i < stats.childCount; i++)
         {
-            Destroy(now);
-
-            if (stats.childCount == 0)
-                break;
-
-            now = stats.GetChild(0);
+            if (stats.GetChild(i).gameObject.name != "NewDropdown")
+                dList.Add(stats.GetChild(i).gameObject);
         }
+
+        for (int i = 0; i < conditions.childCount; i++)
+        {
+            if (conditions.GetChild(i).gameObject.name != "NewDropdown")
+                dList.Add(conditions.GetChild(i).gameObject);
+        }
+
+        if (dList.Count > 0)
+            foreach (var d in dList)
+                Destroy(d);
     }
 }
