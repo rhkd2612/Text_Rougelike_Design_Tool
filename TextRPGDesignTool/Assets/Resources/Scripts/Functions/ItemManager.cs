@@ -65,8 +65,6 @@ public class ItemManager : MonoBehaviour
         else
             BodyController.Instance.AddBody(curItem, STATUS.ITEM, JsonManager.Instance.itemsList.IndexOfKey(curItem.code));
 
-        curItem.Print();
-
         JsonManager.Instance.itemsList[curItem.code] = curItem;
         JsonManager.Instance.itemsList[curItem.code].Print();
 

@@ -7,26 +7,30 @@ public class ModifyController : MonoBehaviour
 {
     public STATUS status;
     string code;
-    SortedList<string,Info> myInfo;
+    SortedList<string, Info> myList;
 
-    void Start()
+    public void SetList()
     {
         code = transform.Find("Code").GetComponent<Text>().text;
-        myInfo = JsonManager.Instance.sLists[(int)status];
+        myList = JsonManager.Instance.sLists[(int)status];
     }
 
     public void ModifyName(string name)
     {
-        myInfo[code].name = name;
+        myList[code].name = name;
     }
 
     public void ModifyExplain(string explain)
     {
-        //myInfo[code].explain = explain;
+        myList[code].explain = explain;
+
+        myList[code].Print();
     }
 
     public void ModifySetDefault(bool b)
     {
-        //((Stat)myInfo[code]).isDefaultStat = b;
+        ((Stat)myList[code]).isDefaultStat = b;
+
+        myList[code].Print();
     }
 }

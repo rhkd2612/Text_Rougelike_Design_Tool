@@ -10,7 +10,8 @@ public class DropdownController : MonoBehaviour
     public GameObject newDropdownObj;
     public GameObject dropdownPref;
 
-    private Item item;
+    public bool isModify = false;
+
     private Dropdown statDropdown;
     private Dropdown degreeDropdown;
 
@@ -21,7 +22,9 @@ public class DropdownController : MonoBehaviour
 
     void Start()
     {
-        item = itemManager.curItem;
+        if (isModify)
+            itemManager.curItem = (Item)JsonManager.Instance.itemsList[itemManager.curItem.code];
+
         statDropdown = newDropdownObj.transform.Find("stat").GetComponent<Dropdown>();
         degreeDropdown = newDropdownObj.transform.Find("degree").GetComponent<Dropdown>();
         AddDropdownOptions();
@@ -50,7 +53,13 @@ public class DropdownController : MonoBehaviour
 
     public void InsertNewDropdown()
     {
-        if (degreeDropdown.value == 0 || item.statDegree.ContainsKey(statDropdown.options[statCount].text) && item.statDegree[statDropdown.options[statCount].text] > 0)
+        if (itemManager.curItem.code == string.Empty || itemManager.curItem.name == string.Empty || itemManager.curItem.explain == string.Empty)
+        {
+            Debug.Log("Failed Create, Code, Name or Explain is empty.");
+            return;
+        }
+
+        if (degreeDropdown.value == 0 || itemManager.curItem.statDegree.ContainsKey(statDropdown.options[statCount].text) && itemManager.curItem.statDegree[statDropdown.options[statCount].text] > 0)
         {
             Debug.Log("Failed Create, Already Same Stat exists or Stat Degree is 0.");
             return;
@@ -67,7 +76,7 @@ public class DropdownController : MonoBehaviour
         newPref.transform.Find("Text").GetComponent<Text>().color = colorList[pos % colorList.Length];
         newPref.SetActive(true);
 
-        item.statDegree[statDropdown.options[statCount].text] = degreeCount;
+        itemManager.curItem.statDegree[statDropdown.options[statCount].text] = degreeCount;
 
         ResetNewDropDown();
     }
@@ -84,11 +93,16 @@ public class DropdownController : MonoBehaviour
         newPref.SetActive(true);
     }
 
+    public void ModifyDropdownValue(Transform tr)
+    {
+        Debug.Log("ModifyDropdownValue");
+        itemManager.curItem.Print();
+
+        itemManager.curItem.statDegree[tr.Find("Text").GetComponent<Text>().text] = tr.Find("DropDown").GetComponent<Dropdown>().value;
+    }
     public void DeleteDropdown(Transform tr)
     {
-        Debug.Log(tr.Find("Text").GetComponent<Text>().text);
-
-        item.statDegree[tr.Find("Text").GetComponent<Text>().text] = 0;
+        itemManager.curItem.statDegree[tr.Find("Text").GetComponent<Text>().text] = 0;
 
         Destroy(tr.gameObject);
 

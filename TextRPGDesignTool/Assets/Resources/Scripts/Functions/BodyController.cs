@@ -81,6 +81,7 @@ public class BodyController : MonoBehaviour
         newPref.transform.Find("Code").GetComponent<Text>().text = cur.code;
         newPref.transform.Find("Name").GetComponent<Text>().text = cur.name;
         newPref.transform.Find("Explain").GetComponent<InputField>().text = cur.explain;
+        newPref.GetComponent<ModifyController>().SetList();
         newPref.SetActive(true);
 
         switch (status)
