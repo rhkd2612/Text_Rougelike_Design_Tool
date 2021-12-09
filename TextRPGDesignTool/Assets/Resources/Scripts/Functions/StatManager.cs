@@ -36,7 +36,12 @@ public class StatManager : MonoBehaviour
 
     public void RemoveStat(Transform tr)
     {
-        JsonManager.Instance.statsList.Remove(tr.Find("Code").GetComponent<Text>().text);
+        string text = tr.Find("Code").GetComponent<Text>().text;
+
+        if (!JsonManager.Instance.statsList.ContainsKey(text))
+            Debug.Log("There's no key in List");
+
+        JsonManager.Instance.statsList.Remove(text);
         Destroy(tr.gameObject);
     }
 

@@ -6,34 +6,15 @@ using System.IO;
 using System.Text;
 
 [System.Serializable]
-public class Serialization<TKey, TValue> : ISerializationCallbackReceiver
+public class Serialization<T>
 {
     [SerializeField]
-    List<TKey> keys;
-    [SerializeField]
-    List<TValue> values;
+    List<T> target;
+    public List<T> ToList() { return target; }
 
-    SortedList<TKey, TValue> target;
-    public SortedList<TKey, TValue> ToSortedList() { return target; }
-
-    public Serialization(SortedList<TKey, TValue> target)
+    public Serialization(List<T> target)
     {
         this.target = target;
-    }
-
-    public void OnBeforeSerialize()
-    {
-        keys = new List<TKey>(target.Keys);
-        values = new List<TValue>(target.Values);
-    }
-
-    public void OnAfterDeserialize()
-    {
-        var count = Math.Min(keys.Count, values.Count);
-        target = new SortedList<TKey, TValue>(count);
-
-        for (var i = 0; i < count; i++)
-            target[keys[i]] = values[i];
     }
 }
 
@@ -47,6 +28,10 @@ public class Info
     public virtual void Print() { }
 
     public virtual void SaveInJson() { }
+
+    public virtual void Serialize() { }
+
+    public virtual void DeSerialize() { }
 }
 
 [System.Serializable]
@@ -77,22 +62,43 @@ public class Stat : Info
         Debug.Log("Explain = " + explain);
         Debug.Log("isDefaultStat = " + isDefaultStat);
     }
+
+    public override void Serialize()
+    {
+
+    }
 }
 
 [System.Serializable]
 public class Item : Info
 {
     public SortedList<string, int> statDegree;
-    public SortedList<string, bool> canShowEvents;
+    public SortedList<string, bool> showEvents;
+
+    [SerializeField]
+    public List<string> statDegreeKeys;
+    [SerializeField]
+    public List<int> statDegreeValues;
+    [SerializeField]
+    public List<string> showEventsKeys;
+    [SerializeField]
+    public List<bool> showEventsValues;
+
     public Item()
     {
         code = "";
         name = "";
         explain = "";
         statDegree = new SortedList<string, int>();
-        canShowEvents = new SortedList<string, bool>();
+        showEvents = new SortedList<string, bool>();
 
-        canShowEvents["0"] = true;
+        showEvents["0"] = true;
+
+        statDegreeKeys = new List<string>();
+        statDegreeValues = new List<int>();
+
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
     }
 
     public Item(string c, string n, string e, SortedList<string, int> sD, SortedList<string, bool> cO)
@@ -101,17 +107,23 @@ public class Item : Info
         name = n;
         explain = e;
         statDegree = sD;
-        canShowEvents = cO;
+        showEvents = cO;
 
-        if(sD == null)
+        if (sD == null)
             statDegree = new SortedList<string, int>();
         else
             statDegree = sD;
 
         if (cO == null)
-            canShowEvents = new SortedList<string, bool>();
+            showEvents = new SortedList<string, bool>();
         else
-            canShowEvents = cO;
+            showEvents = cO;
+
+        statDegreeKeys = new List<string>();
+        statDegreeValues = new List<int>();
+
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
     }
 
     public override void Print()
@@ -126,13 +138,45 @@ public class Item : Info
                 Debug.Log(string.Format("statDegree[{0}] = {1}", idx.Key, idx.Value));
             }
 
-        if (canShowEvents.Count > 0)
-            foreach (var idx in canShowEvents)
+        if (showEvents.Count > 0)
+            foreach (var idx in showEvents)
             {
-                Debug.Log(string.Format("canShowEvents[{0}] = {1}", idx.Key, idx.Value));
+                Debug.Log(string.Format("showEvents[{0}] = {1}", idx.Key, idx.Value));
             }
     }
+
+    public override void Serialize()
+    {
+        statDegreeKeys = new List<string>();
+        statDegreeValues = new List<int>();
+
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
+
+        foreach (var c in statDegree)
+        {
+            statDegreeKeys.Add(c.Key);
+            statDegreeValues.Add(c.Value);
+        }
+
+        foreach (var c in showEvents)
+        {
+            showEventsKeys.Add(c.Key);
+            showEventsValues.Add(c.Value);
+        }
+    }
+
+    public override void DeSerialize()
+    {
+        for (int i = 0; i < statDegreeKeys.Count; i++)
+            statDegree[statDegreeKeys[i]] = statDegreeValues[i];
+
+        for (int i = 0; i < showEventsKeys.Count; i++)
+            showEvents[showEventsKeys[i]] = showEventsValues[i];
+    }
 }
+
+
 
 
 public class JsonManager : MonoBehaviour
@@ -141,6 +185,9 @@ public class JsonManager : MonoBehaviour
 
     public SortedList<string, Info> statsList;
     public SortedList<string, Info> itemsList;
+
+    List<Stat> jStatList = new List<Stat>();
+    List<Item> jItemList = new List<Item>();
 
     public List<SortedList<string, Info>> sLists = new List<SortedList<string, Info>>();
 
@@ -174,16 +221,18 @@ public class JsonManager : MonoBehaviour
         sLists.Add(statsList);
         sLists.Add(itemsList);
 
-        if (System.IO.File.Exists(string.Format("{0}/{1}.json",Application.dataPath, statFileName)))
+        if (System.IO.File.Exists(string.Format("{0}/{1}.json", Application.dataPath, statFileName)))
         {
             Debug.Log("StatJsonFile Exists");
 
-            //var jStats = LoadJsonFile<JStatClassArray>(Application.dataPath, itemFileName);
+            var str = LoadJsonFileWithString(Application.dataPath, statFileName);
+            jStatList = JsonUtility.FromJson<Serialization<Stat>>(str).ToList();
 
-            //foreach (var cur in jStats.jStatClasses)
-            //{
-            //    statsList[cur.code] = cur;
-            //}
+            foreach (var stat in jStatList)
+            {
+                stat.DeSerialize();
+                statsList.Add(stat.code, stat);
+            }
         }
         else
         {
@@ -191,31 +240,26 @@ public class JsonManager : MonoBehaviour
 
             statsList["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다", false);
             statsList["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다", false);
-
-            Debug.Log("sssss");
-            sLists[0]["HP"].Print();
         }
 
         if (System.IO.File.Exists(string.Format("{0}/{1}.json", Application.dataPath, itemFileName)))
         {
             Debug.Log("ItemJsonFile Exists");
 
-            //var jItems = LoadJsonFile<JItemClassArray>(Application.dataPath, itemFileName);
+            var str = LoadJsonFileWithString(Application.dataPath, itemFileName);
+            jItemList = JsonUtility.FromJson<Serialization<Item>>(str).ToList();
 
-            //foreach (var cur in jItems.jItemClasses)
-            //{
-            //    itemsList[cur.code] = cur;
-            //    cur.Print();
-            //}
-
-            // SortedList<string, int> temp = JsonUtility.FromJson<Serialization<string, int>>(JsonUtility.ToJson(new Serialization<string, int>(iCur.statDegree))).ToSortedList();
-
+            foreach (var item in jItemList)
+            {
+                item.DeSerialize();
+                itemsList.Add(item.code, item);
+            }
         }
         else
         {
             Debug.Log("ItemJsonFile Not Exist");
 
-            itemsList["scv"] = new Item("scv", "1", "1", null, null);
+            itemsList["temp1"] = new Item("temp1", "임시 아이템이다.", "아이템 그렇게 만드는 거 아닌데", null, null);
         }
     }
 
@@ -247,35 +291,56 @@ public class JsonManager : MonoBehaviour
         return JsonUtility.FromJson<T>(jsonData);
     }
 
+    string LoadJsonFileWithString(string loadPath, string fileName)
+    {
+        FileStream fileStream = new FileStream(string.Format("{0}/{1}.json", loadPath, fileName), FileMode.Open);
+        byte[] data = new byte[fileStream.Length];
+        fileStream.Read(data, 0, data.Length);
+        fileStream.Close();
+        string jsonData = Encoding.UTF8.GetString(data);
+        return jsonData;
+    }
+
     public void JsonDataSave()
     {
         DeleteAllFiles();
+        string jsonData = string.Empty;
 
-        foreach (var cur in itemsList)
+        #region STAT_SAVE
+        foreach (var cur in statsList)
         {
-            Item iCur = (Item)cur.Value;
+            Stat iCur = (Stat)cur.Value;
+            iCur.Serialize();
 
             iCur.Print();
 
-            string jsonData = ObjectToJson(iCur);
-
-            //jsonData = modifyJsonString(jsonData);
-            //jsonData += JsonUtility.ToJson(new Serialization<string, int>(iCur.statDegree));
-            //jsonData = modifyJsonString(jsonData);
-            //jsonData += JsonUtility.ToJson(new Serialization<string, bool>(iCur.canShowEvents));
-
-            CreateJsonFile(Application.dataPath, itemFileName, jsonData);
+            jStatList.Add(iCur);
         }
-    }
 
-    string modifyJsonString(string text)
-    {
-        return text.Substring(0, text.Length - 1) + ',';
+        jsonData = ObjectToJson(new Serialization<Stat>(jStatList));
+        CreateJsonFile(Application.dataPath, statFileName, jsonData);
+        #endregion
+
+        #region ITEM_SAVE
+        foreach (var cur in itemsList)
+        {
+            Item iCur = (Item)cur.Value;
+            iCur.Serialize();
+
+            jItemList.Add(iCur);
+        }
+
+        jsonData = ObjectToJson(new Serialization<Item>(jItemList));
+        CreateJsonFile(Application.dataPath, itemFileName, jsonData);
+        #endregion
     }
 
     void DeleteAllFiles()
     {
-        if(File.Exists(string.Format("{0}/{1}.json", Application.dataPath, statFileName)))
+        jStatList = new List<Stat>();
+        jItemList = new List<Item>();
+
+        if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, statFileName)))
             File.Delete(string.Format("{0}/{1}.json", Application.dataPath, statFileName));
 
         if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, itemFileName)))

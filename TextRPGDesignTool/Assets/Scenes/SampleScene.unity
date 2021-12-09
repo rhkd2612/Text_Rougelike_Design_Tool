@@ -10124,6 +10124,10 @@ MonoBehaviour:
     code: 
     name: 
     explain: 
+    statDegreeKeys: []
+    statDegreeValues: 
+    showEventsKeys: []
+    showEventsValues: 
 --- !u!114 &845580986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25156,6 +25160,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 845580983}
+    - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: JsonDataSave
+      objectReference: {fileID: 0}
+    - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8094136297809270681, guid: cdea31cc7529fc740b66e1c28bcba8f6,
         type: 3}

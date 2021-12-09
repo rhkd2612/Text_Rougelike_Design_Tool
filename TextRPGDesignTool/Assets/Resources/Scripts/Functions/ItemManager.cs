@@ -36,9 +36,9 @@ public class ItemManager : MonoBehaviour
         curItem.explain = exp;
     }
 
-    public void ItemStatManager(string stat,int degree)
+    public void ItemStatManager(string stat, int degree)
     {
-        curItem.statDegree[stat] = degree;        
+        curItem.statDegree[stat] = degree;
     }
 
     public void ItemConditionInsert(string stat, int degree)
@@ -48,13 +48,18 @@ public class ItemManager : MonoBehaviour
 
     public void RemoveItem(Transform tr)
     {
-        JsonManager.Instance.statsList.Remove(tr.Find("Code").GetComponent<Text>().text);
+        string text = tr.Find("Code").GetComponent<Text>().text;
+
+        if (!JsonManager.Instance.itemsList.ContainsKey(text))
+            Debug.Log("There's no key in List");
+
+        JsonManager.Instance.itemsList.Remove(text);
         Destroy(tr.gameObject);
     }
 
     public void InsertItem()
     {
-        if(curItem.code == string.Empty || curItem.name == string.Empty || curItem.explain == string.Empty)
+        if (curItem.code == string.Empty || curItem.name == string.Empty || curItem.explain == string.Empty)
         {
             Debug.Log("Failed Create, Already Same Item exists or Code, Name or Explain is empty.");
             return;
