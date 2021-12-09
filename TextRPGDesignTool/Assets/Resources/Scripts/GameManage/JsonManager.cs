@@ -4,18 +4,37 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
 
 [System.Serializable]
-public class JItemClassArray
+public class Serialization<TKey, TValue> : ISerializationCallbackReceiver
 {
-    public Item[] jItemClasses;
-}
+    [SerializeField]
+    List<TKey> keys;
+    [SerializeField]
+    List<TValue> values;
 
-[System.Serializable]
-public class JStatClassArray
-{
-    public Stat[] jStatClasses;
+    SortedList<TKey, TValue> target;
+    public SortedList<TKey, TValue> ToSortedList() { return target; }
+
+    public Serialization(SortedList<TKey, TValue> target)
+    {
+        this.target = target;
+    }
+
+    public void OnBeforeSerialize()
+    {
+        keys = new List<TKey>(target.Keys);
+        values = new List<TValue>(target.Values);
+    }
+
+    public void OnAfterDeserialize()
+    {
+        var count = Math.Min(keys.Count, values.Count);
+        target = new SortedList<TKey, TValue>(count);
+
+        for (var i = 0; i < count; i++)
+            target[keys[i]] = values[i];
+    }
 }
 
 [System.Serializable]
@@ -154,42 +173,47 @@ public class JsonManager : MonoBehaviour
 
         sLists.Add(statsList);
         sLists.Add(itemsList);
-        // + char, event
 
-        if (System.IO.File.Exists(statFileName + ".json"))
+        if (System.IO.File.Exists(string.Format("{0}/{1}.json",Application.dataPath, statFileName)))
         {
             Debug.Log("StatJsonFile Exists");
 
-            var jStats = LoadJsonFile<JStatClassArray>(Application.dataPath, itemFileName);
+            //var jStats = LoadJsonFile<JStatClassArray>(Application.dataPath, itemFileName);
 
-            foreach (var cur in jStats.jStatClasses)
-            {
-                statsList[cur.code] = cur;
-            }
+            //foreach (var cur in jStats.jStatClasses)
+            //{
+            //    statsList[cur.code] = cur;
+            //}
         }
         else
         {
-            Debug.Log("statDict Create");
+            Debug.Log("StatJsonFile Not Exist");
 
             statsList["HP"] = new Stat("HP", "체력", "많이 맞을 수 있다", false);
             statsList["POWER"] = new Stat("POWER", "공격력", "많이 때릴 수 있다", false);
+
+            Debug.Log("sssss");
+            sLists[0]["HP"].Print();
         }
 
-        if (System.IO.File.Exists(itemFileName + ".json"))
+        if (System.IO.File.Exists(string.Format("{0}/{1}.json", Application.dataPath, itemFileName)))
         {
             Debug.Log("ItemJsonFile Exists");
 
-            var jItems = LoadJsonFile<JItemClassArray>(Application.dataPath, itemFileName);
+            //var jItems = LoadJsonFile<JItemClassArray>(Application.dataPath, itemFileName);
 
-            foreach (var cur in jItems.jItemClasses)
-            {
-                itemsList[cur.code] = cur;
-                cur.Print();
-            }
+            //foreach (var cur in jItems.jItemClasses)
+            //{
+            //    itemsList[cur.code] = cur;
+            //    cur.Print();
+            //}
+
+            // SortedList<string, int> temp = JsonUtility.FromJson<Serialization<string, int>>(JsonUtility.ToJson(new Serialization<string, int>(iCur.statDegree))).ToSortedList();
+
         }
         else
         {
-            Debug.Log("itemDict Create");
+            Debug.Log("ItemJsonFile Not Exist");
 
             itemsList["scv"] = new Item("scv", "1", "1", null, null);
         }
@@ -207,7 +231,7 @@ public class JsonManager : MonoBehaviour
 
     void CreateJsonFile(string createPath, string fileName, string jsonData)
     {
-        FileStream fileStream = new FileStream(string.Format("{0}/{1}.json", createPath, fileName), FileMode.Create);
+        FileStream fileStream = new FileStream(string.Format("{0}/{1}.json", createPath, fileName), FileMode.Append);
         byte[] data = Encoding.UTF8.GetBytes(jsonData);
         fileStream.Write(data, 0, data.Length);
         fileStream.Close();
@@ -225,10 +249,36 @@ public class JsonManager : MonoBehaviour
 
     public void JsonDataSave()
     {
+        DeleteAllFiles();
+
         foreach (var cur in itemsList)
         {
-            string jsonData = ObjectToJson(cur.Value);
+            Item iCur = (Item)cur.Value;
+
+            iCur.Print();
+
+            string jsonData = ObjectToJson(iCur);
+
+            //jsonData = modifyJsonString(jsonData);
+            //jsonData += JsonUtility.ToJson(new Serialization<string, int>(iCur.statDegree));
+            //jsonData = modifyJsonString(jsonData);
+            //jsonData += JsonUtility.ToJson(new Serialization<string, bool>(iCur.canShowEvents));
+
             CreateJsonFile(Application.dataPath, itemFileName, jsonData);
         }
+    }
+
+    string modifyJsonString(string text)
+    {
+        return text.Substring(0, text.Length - 1) + ',';
+    }
+
+    void DeleteAllFiles()
+    {
+        if(File.Exists(string.Format("{0}/{1}.json", Application.dataPath, statFileName)))
+            File.Delete(string.Format("{0}/{1}.json", Application.dataPath, statFileName));
+
+        if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, itemFileName)))
+            File.Delete(string.Format("{0}/{1}.json", Application.dataPath, itemFileName));
     }
 }
