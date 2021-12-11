@@ -22,6 +22,7 @@ public class BodyController : MonoBehaviour
     public Transform[] infoPars;
 
     public Transform itemMainInfo;
+    public Transform charMainInfo;
 
     int bodyCount;
 
@@ -122,8 +123,6 @@ public class BodyController : MonoBehaviour
     {
         Item curItem = (Item)JsonManager.Instance.itemsList[tr.Find("Code").GetComponent<Text>().text];
 
-        curItem.Print();
-
         itemMainInfo.gameObject.SetActive(true);
         itemMainInfo.Find("InputFields").Find("code").GetComponent<InputField>().text = curItem.code;
         itemMainInfo.Find("InputFields").Find("name").GetComponent<InputField>().text = curItem.name;
@@ -136,10 +135,53 @@ public class BodyController : MonoBehaviour
         }
     }
 
-    public void ShutIteminfo(Transform itemPopup)
+    public void ShutItemInfo(Transform itemPopup)
     {
         Transform stats = itemPopup.Find("Stat");
         Transform conditions = itemPopup.Find("Condition");
+
+        if (stats.childCount == 0)
+            return;
+
+        List<GameObject> dList = new List<GameObject>();
+
+        for (int i = 0; i < stats.childCount; i++)
+        {
+            if (stats.GetChild(i).gameObject.name != "NewDropdown")
+                dList.Add(stats.GetChild(i).gameObject);
+        }
+
+        for (int i = 0; i < conditions.childCount; i++)
+        {
+            if (conditions.GetChild(i).gameObject.name != "NewDropdown")
+                dList.Add(conditions.GetChild(i).gameObject);
+        }
+
+        if (dList.Count > 0)
+            foreach (var d in dList)
+                Destroy(d);
+    }
+
+    public void ShowCharInfo(Transform tr)
+    {
+        Character curChar = (Character)JsonManager.Instance.charsList[tr.Find("Code").GetComponent<Text>().text];
+
+        charMainInfo.gameObject.SetActive(true);
+        charMainInfo.Find("InputFields").Find("code").GetComponent<InputField>().text = curChar.code;
+        charMainInfo.Find("InputFields").Find("name").GetComponent<InputField>().text = curChar.name;
+        charMainInfo.Find("InputFields").Find("ingame_explain").GetComponent<InputField>().text = curChar.explain;
+
+        if (curChar.statDegree.Count > 0)
+        {
+            foreach (var c in curChar.statDegree)
+                charMainInfo.Find("Stat").GetComponent<DropdownController>().InsertNewDropdown(c.Key, c.Value);
+        }
+    }
+
+    public void ShutCharInfo(Transform charPopup)
+    {
+        Transform stats = charPopup.Find("Stat");
+        Transform conditions = charPopup.Find("Condition");
 
         if (stats.childCount == 0)
             return;

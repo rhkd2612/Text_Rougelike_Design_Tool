@@ -176,8 +176,112 @@ public class Item : Info
     }
 }
 
+[System.Serializable]
+public class Character : Info
+{
+    public SortedList<string, int> statDegree;
+    public SortedList<string, bool> showEvents;
 
+    [SerializeField]
+    public List<string> statDegreeKeys;
+    [SerializeField]
+    public List<int> statDegreeValues;
+    [SerializeField]
+    public List<string> showEventsKeys;
+    [SerializeField]
+    public List<bool> showEventsValues;
 
+    public Character()
+    {
+        code = "";
+        name = "";
+        explain = "";
+        statDegree = new SortedList<string, int>();
+        showEvents = new SortedList<string, bool>();
+
+        showEvents["0"] = true;
+
+        statDegreeKeys = new List<string>();
+        statDegreeValues = new List<int>();
+
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
+    }
+
+    public Character(string c, string n, string e, SortedList<string, int> sD, SortedList<string, bool> cO)
+    {
+        code = c;
+        name = n;
+        explain = e;
+        statDegree = sD;
+        showEvents = cO;
+
+        if (sD == null)
+            statDegree = new SortedList<string, int>();
+        else
+            statDegree = sD;
+
+        if (cO == null)
+            showEvents = new SortedList<string, bool>();
+        else
+            showEvents = cO;
+
+        statDegreeKeys = new List<string>();
+        statDegreeValues = new List<int>();
+
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
+    }
+
+    public override void Print()
+    {
+        Debug.Log("Code = " + code);
+        Debug.Log("Name = " + name);
+        Debug.Log("Explain = " + explain);
+
+        if (statDegree.Count > 0)
+            foreach (var idx in statDegree)
+            {
+                Debug.Log(string.Format("statDegree[{0}] = {1}", idx.Key, idx.Value));
+            }
+
+        if (showEvents.Count > 0)
+            foreach (var idx in showEvents)
+            {
+                Debug.Log(string.Format("showEvents[{0}] = {1}", idx.Key, idx.Value));
+            }
+    }
+
+    public override void Serialize()
+    {
+        statDegreeKeys = new List<string>();
+        statDegreeValues = new List<int>();
+
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
+
+        foreach (var c in statDegree)
+        {
+            statDegreeKeys.Add(c.Key);
+            statDegreeValues.Add(c.Value);
+        }
+
+        foreach (var c in showEvents)
+        {
+            showEventsKeys.Add(c.Key);
+            showEventsValues.Add(c.Value);
+        }
+    }
+
+    public override void DeSerialize()
+    {
+        for (int i = 0; i < statDegreeKeys.Count; i++)
+            statDegree[statDegreeKeys[i]] = statDegreeValues[i];
+
+        for (int i = 0; i < showEventsKeys.Count; i++)
+            showEvents[showEventsKeys[i]] = showEventsValues[i];
+    }
+}
 
 public class JsonManager : MonoBehaviour
 {
@@ -185,14 +289,17 @@ public class JsonManager : MonoBehaviour
 
     public SortedList<string, Info> statsList;
     public SortedList<string, Info> itemsList;
+    public SortedList<string, Info> charsList;
 
     List<Stat> jStatList = new List<Stat>();
     List<Item> jItemList = new List<Item>();
+    List<Character> jCharList = new List<Character>();
 
     public List<SortedList<string, Info>> sLists = new List<SortedList<string, Info>>();
 
     public string statFileName = "StatInfo";
     public string itemFileName = "ItemsInfo";
+    public string charFileName = "CharsInfo";
 
 
     public static JsonManager Instance
@@ -217,9 +324,11 @@ public class JsonManager : MonoBehaviour
 
         statsList = new SortedList<string, Info>();
         itemsList = new SortedList<string, Info>();
+        charsList = new SortedList<string, Info>();
 
         sLists.Add(statsList);
         sLists.Add(itemsList);
+        sLists.Add(charsList);
 
         if (System.IO.File.Exists(string.Format("{0}/{1}.json", Application.dataPath, statFileName)))
         {
@@ -260,6 +369,26 @@ public class JsonManager : MonoBehaviour
             Debug.Log("ItemJsonFile Not Exist");
 
             itemsList["temp1"] = new Item("temp1", "임시 아이템이다.", "아이템 그렇게 만드는 거 아닌데", null, null);
+        }
+
+        if (System.IO.File.Exists(string.Format("{0}/{1}.json", Application.dataPath, charFileName)))
+        {
+            Debug.Log("CharJsonFile Exists");
+
+            var str = LoadJsonFileWithString(Application.dataPath, charFileName);
+            jCharList = JsonUtility.FromJson<Serialization<Character>>(str).ToList();
+
+            foreach (var character in jCharList)
+            {
+                character.DeSerialize();
+                itemsList.Add(character.code, character);
+            }
+        }
+        else
+        {
+            Debug.Log("CharJsonFile Not Exist");
+
+            charsList["백수"] = new Character("백수", "임시 직업이다.", "직업 그렇게 만드는 거 아닌데", null, null);
         }
     }
 
@@ -333,17 +462,34 @@ public class JsonManager : MonoBehaviour
         jsonData = ObjectToJson(new Serialization<Item>(jItemList));
         CreateJsonFile(Application.dataPath, itemFileName, jsonData);
         #endregion
+
+        #region CHARACTER_SAVE
+        foreach (var cur in charsList)
+        {
+            Character iCur = (Character)cur.Value;
+            iCur.Serialize();
+
+            jCharList.Add(iCur);
+        }
+
+        jsonData = ObjectToJson(new Serialization<Character>(jCharList));
+        CreateJsonFile(Application.dataPath, charFileName, jsonData);
+        #endregion
     }
 
     void DeleteAllFiles()
     {
         jStatList = new List<Stat>();
         jItemList = new List<Item>();
+        jCharList = new List<Character>();
 
         if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, statFileName)))
             File.Delete(string.Format("{0}/{1}.json", Application.dataPath, statFileName));
 
         if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, itemFileName)))
             File.Delete(string.Format("{0}/{1}.json", Application.dataPath, itemFileName));
+
+        if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, charFileName)))
+            File.Delete(string.Format("{0}/{1}.json", Application.dataPath, charFileName));
     }
 }

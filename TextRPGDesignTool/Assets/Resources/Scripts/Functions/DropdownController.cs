@@ -5,7 +5,10 @@ using UnityEngine.UI;
 
 public class DropdownController : MonoBehaviour
 {
+    public STATUS status;
+
     public ItemManager itemManager;
+    public CharManager charManager;
     public Transform par;
     public GameObject newDropdownObj;
     public GameObject dropdownPref;
@@ -23,7 +26,10 @@ public class DropdownController : MonoBehaviour
     void Start()
     {
         if (isModify)
+        {
             itemManager.curItem = (Item)JsonManager.Instance.itemsList[itemManager.curItem.code];
+            charManager.curCharacter = (Character)JsonManager.Instance.charsList[charManager.curCharacter.code];
+        }
 
         statDropdown = newDropdownObj.transform.Find("stat").GetComponent<Dropdown>();
         degreeDropdown = newDropdownObj.transform.Find("degree").GetComponent<Dropdown>();
@@ -36,7 +42,7 @@ public class DropdownController : MonoBehaviour
 
         List<Dropdown.OptionData> list = new List<Dropdown.OptionData>();
 
-        foreach(var s in JsonManager.Instance.statsList.Keys)
+        foreach (var s in JsonManager.Instance.statsList.Keys)
         {
             Dropdown.OptionData od = new Dropdown.OptionData(s);
             list.Add(od);
@@ -53,30 +59,65 @@ public class DropdownController : MonoBehaviour
 
     public void InsertNewDropdown()
     {
-        if (itemManager.curItem.code == string.Empty || itemManager.curItem.name == string.Empty || itemManager.curItem.explain == string.Empty)
+        switch (status)
         {
-            Debug.Log("Failed Create, Code, Name or Explain is empty.");
-            return;
+            case STATUS.ITEM:
+                {
+                    if (itemManager.curItem.code == string.Empty || itemManager.curItem.name == string.Empty || itemManager.curItem.explain == string.Empty)
+                    {
+                        Debug.Log("Failed Create, Code, Name or Explain is empty.");
+                        return;
+                    }
+
+                    if (degreeDropdown.value == 0 || itemManager.curItem.statDegree.ContainsKey(statDropdown.options[statCount].text) && itemManager.curItem.statDegree[statDropdown.options[statCount].text] > 0)
+                    {
+                        Debug.Log("Failed Create, Already Same Stat exists or Stat Degree is 0.");
+                        return;
+                    }
+
+                    int pos = newDropdownObj.transform.GetSiblingIndex();
+
+                    Debug.Log(pos);
+
+                    GameObject newPref = Instantiate(dropdownPref, par);
+                    newPref.transform.SetSiblingIndex(pos);
+                    newPref.transform.Find("Text").GetComponent<Text>().text = statDropdown.options[statCount].text;
+                    newPref.transform.Find("DropDown").GetComponent<Dropdown>().value = degreeCount;
+                    newPref.transform.Find("Text").GetComponent<Text>().color = colorList[pos % colorList.Length];
+                    newPref.SetActive(true);
+
+                    itemManager.curItem.statDegree[statDropdown.options[statCount].text] = degreeCount;
+                }
+                break;
+            case STATUS.CHARACTER:
+                {
+                    if (charManager.curCharacter.code == string.Empty || charManager.curCharacter.name == string.Empty || charManager.curCharacter.explain == string.Empty)
+                    {
+                        Debug.Log("Failed Create, Code, Name or Explain is empty.");
+                        return;
+                    }
+
+                    if (degreeDropdown.value == 0 || charManager.curCharacter.statDegree.ContainsKey(statDropdown.options[statCount].text) && charManager.curCharacter.statDegree[statDropdown.options[statCount].text] > 0)
+                    {
+                        Debug.Log("Failed Create, Already Same Stat exists or Stat Degree is 0.");
+                        return;
+                    }
+
+                    int pos = newDropdownObj.transform.GetSiblingIndex();
+
+                    Debug.Log(pos);
+
+                    GameObject newPref = Instantiate(dropdownPref, par);
+                    newPref.transform.SetSiblingIndex(pos);
+                    newPref.transform.Find("Text").GetComponent<Text>().text = statDropdown.options[statCount].text;
+                    newPref.transform.Find("DropDown").GetComponent<Dropdown>().value = degreeCount;
+                    newPref.transform.Find("Text").GetComponent<Text>().color = colorList[pos % colorList.Length];
+                    newPref.SetActive(true);
+
+                    charManager.curCharacter.statDegree[statDropdown.options[statCount].text] = degreeCount;
+                }
+                break;
         }
-
-        if (degreeDropdown.value == 0 || itemManager.curItem.statDegree.ContainsKey(statDropdown.options[statCount].text) && itemManager.curItem.statDegree[statDropdown.options[statCount].text] > 0)
-        {
-            Debug.Log("Failed Create, Already Same Stat exists or Stat Degree is 0.");
-            return;
-        }
-
-        int pos = newDropdownObj.transform.GetSiblingIndex();
-
-        Debug.Log(pos);
-
-        GameObject newPref = Instantiate(dropdownPref,par);
-        newPref.transform.SetSiblingIndex(pos);
-        newPref.transform.Find("Text").GetComponent<Text>().text = statDropdown.options[statCount].text;
-        newPref.transform.Find("DropDown").GetComponent<Dropdown>().value = degreeCount;
-        newPref.transform.Find("Text").GetComponent<Text>().color = colorList[pos % colorList.Length];
-        newPref.SetActive(true);
-
-        itemManager.curItem.statDegree[statDropdown.options[statCount].text] = degreeCount;
 
         ResetNewDropDown();
     }
@@ -95,14 +136,31 @@ public class DropdownController : MonoBehaviour
 
     public void ModifyDropdownValue(Transform tr)
     {
-        Debug.Log("ModifyDropdownValue");
-        itemManager.curItem.Print();
+        switch (status)
+        {
+            case STATUS.ITEM:
+                itemManager.curItem.Print();
 
-        itemManager.curItem.statDegree[tr.Find("Text").GetComponent<Text>().text] = tr.Find("DropDown").GetComponent<Dropdown>().value;
+                itemManager.curItem.statDegree[tr.Find("Text").GetComponent<Text>().text] = tr.Find("DropDown").GetComponent<Dropdown>().value;
+                break;
+            case STATUS.CHARACTER:
+                charManager.curCharacter.Print();
+
+                charManager.curCharacter.statDegree[tr.Find("Text").GetComponent<Text>().text] = tr.Find("DropDown").GetComponent<Dropdown>().value;
+                break;
+        }
     }
     public void DeleteDropdown(Transform tr)
     {
-        itemManager.curItem.statDegree[tr.Find("Text").GetComponent<Text>().text] = 0;
+        switch (status)
+        {
+            case STATUS.ITEM:
+                itemManager.curItem.statDegree[tr.Find("Text").GetComponent<Text>().text] = 0;
+                break;
+            case STATUS.CHARACTER:
+                charManager.curCharacter.statDegree[tr.Find("Text").GetComponent<Text>().text] = 0;
+                break;
+        }
 
         Destroy(tr.gameObject);
 
@@ -113,10 +171,9 @@ public class DropdownController : MonoBehaviour
     {
         statCount = i;
     }
+
     public void SetDegree(int i)
     {
         degreeCount = i;
-
-        Debug.Log(i);
     }
 }

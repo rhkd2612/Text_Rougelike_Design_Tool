@@ -7,7 +7,6 @@ public class ItemManager : MonoBehaviour
 {
     public GameObject itemPopup;
     public Item curItem = new Item();
-    private string lastName = "";
 
     private void CurItemClear()
     {
