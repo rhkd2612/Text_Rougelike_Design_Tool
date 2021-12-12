@@ -381,7 +381,7 @@ public class JsonManager : MonoBehaviour
             foreach (var character in jCharList)
             {
                 character.DeSerialize();
-                itemsList.Add(character.code, character);
+                charsList.Add(character.code, character);
             }
         }
         else
