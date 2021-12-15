@@ -131,7 +131,10 @@ public class BodyController : MonoBehaviour
         if (curItem.statDegree.Count > 0)
         {
             foreach (var c in curItem.statDegree)
+            {
+                Debug.Log(string.Format("this is {0}", c.Key));
                 itemMainInfo.Find("Stat").GetComponent<DropdownController>().InsertNewDropdown(c.Key, c.Value);
+            }
         }
     }
 

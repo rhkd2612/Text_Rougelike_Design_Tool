@@ -21,8 +21,6 @@ public class CharManager : MonoBehaviour
     public void ModifyCharacterSelect(Transform tr)
     {
         curCharacter = (Character)JsonManager.Instance.charsList[tr.Find("Code").GetComponent<Text>().text];
-
-        curCharacter.Print();
     }
 
     public void SetCharacterName(string name)

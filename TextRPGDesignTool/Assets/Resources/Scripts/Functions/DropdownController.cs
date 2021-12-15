@@ -15,6 +15,7 @@ public class DropdownController : MonoBehaviour
 
     public bool isModify = false;
 
+    [SerializeField]
     private Dropdown statDropdown;
     private Dropdown degreeDropdown;
 
@@ -27,8 +28,8 @@ public class DropdownController : MonoBehaviour
     {
         if (isModify)
         {
-            itemManager.curItem = (Item)JsonManager.Instance.itemsList[itemManager.curItem.code];
-            charManager.curCharacter = (Character)JsonManager.Instance.charsList[charManager.curCharacter.code];
+            //itemManager.curItem = (Item)JsonManager.Instance.itemsList[itemManager.curItem.code];
+            //charManager.curCharacter = (Character)JsonManager.Instance.charsList[charManager.curCharacter.code];
         }
 
         statDropdown = newDropdownObj.transform.Find("stat").GetComponent<Dropdown>();
@@ -59,6 +60,12 @@ public class DropdownController : MonoBehaviour
 
     public void InsertNewDropdown()
     {
+        if (!JsonManager.Instance.statsList.ContainsKey(statDropdown.options[statCount].text))
+        {
+            Debug.Log("There's no key");
+            return;
+        }
+
         switch (status)
         {
             case STATUS.ITEM:
@@ -124,6 +131,9 @@ public class DropdownController : MonoBehaviour
 
     public void InsertNewDropdown(string st, int deg)
     {
+        if (!JsonManager.Instance.statsList.ContainsKey(st))
+            return;
+
         int pos = newDropdownObj.transform.GetSiblingIndex();
 
         GameObject newPref = Instantiate(dropdownPref, par);
