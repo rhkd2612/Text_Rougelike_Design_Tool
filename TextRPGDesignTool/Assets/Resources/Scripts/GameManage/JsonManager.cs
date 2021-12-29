@@ -72,6 +72,8 @@ public class Stat : Info
 [System.Serializable]
 public class Item : Info
 {
+    public bool isConsume = false;
+    public bool isShownAllScenes = false;
     public SortedList<string, int> statDegree;
     public SortedList<string, bool> showEvents;
 
@@ -101,8 +103,10 @@ public class Item : Info
         showEventsValues = new List<bool>();
     }
 
-    public Item(string c, string n, string e, SortedList<string, int> sD, SortedList<string, bool> cO)
+    public Item(string c, string n, string e, SortedList<string, int> sD, SortedList<string, bool> cO, bool isC, bool isS)
     {
+        isConsume = isC;
+        isShownAllScenes = isS;
         code = c;
         name = n;
         explain = e;
@@ -131,6 +135,7 @@ public class Item : Info
         Debug.Log("Code = " + code);
         Debug.Log("Name = " + name);
         Debug.Log("Explain = " + explain);
+        Debug.Log("isConsume = " + isConsume);
 
         if (statDegree.Count > 0)
             foreach (var idx in statDegree)
@@ -368,7 +373,7 @@ public class JsonManager : MonoBehaviour
         {
             Debug.Log("ItemJsonFile Not Exist");
 
-            itemsList["temp1"] = new Item("temp1", "임시 아이템이다.", "아이템 그렇게 만드는 거 아닌데", null, null);
+            itemsList["temp1"] = new Item("temp1", "임시 아이템이다.", "아이템 그렇게 만드는 거 아닌데", null, null,false,false);
         }
 
         if (System.IO.File.Exists(string.Format("{0}/{1}.json", Application.dataPath, charFileName)))

@@ -35,6 +35,16 @@ public class ItemManager : MonoBehaviour
         curItem.explain = exp;
     }
 
+    public void SetItemIsConsume(bool isC)
+    {
+        curItem.isConsume = isC;
+    }
+
+    public void SetItemShowAllScenes(bool isShowAllScene)
+    {
+        curItem.isShownAllScenes = true;
+    }
+
     public void ItemStatManager(string stat, int degree)
     {
         curItem.statDegree[stat] = degree;
