@@ -42,7 +42,7 @@ public class ItemManager : MonoBehaviour
 
     public void SetItemShowAllScenes(bool isShowAllScene)
     {
-        curItem.isShownAllScenes = true;
+        curItem.isShownAllScenes = isShowAllScene;
     }
 
     public void ItemStatManager(string stat, int degree)

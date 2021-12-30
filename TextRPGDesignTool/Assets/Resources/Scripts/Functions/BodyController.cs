@@ -127,13 +127,24 @@ public class BodyController : MonoBehaviour
         itemMainInfo.Find("InputFields").Find("code").GetComponent<InputField>().text = curItem.code;
         itemMainInfo.Find("InputFields").Find("name").GetComponent<InputField>().text = curItem.name;
         itemMainInfo.Find("InputFields").Find("ingame_explain").GetComponent<InputField>().text = curItem.explain;
+        itemMainInfo.Find("Additional").Find("Consume").Find("Toggle").GetComponent<Toggle>().isOn = curItem.isConsume;
+        itemMainInfo.Find("Additional").Find("AllScene").Find("Toggle").GetComponent<Toggle>().isOn = curItem.isShownAllScenes;
 
         if (curItem.statDegree.Count > 0)
         {
             foreach (var c in curItem.statDegree)
             {
                 Debug.Log(string.Format("this is {0}", c.Key));
-                itemMainInfo.Find("Stat").GetComponent<DropdownController>().InsertNewDropdown(c.Key, c.Value);
+                itemMainInfo.Find("Controller").GetComponent<DropdownController>().InsertNewDropdown(c.Key, c.Value);
+            }
+        }
+
+        if(curItem.showEvents.Count > 0)
+        {
+            foreach(var c in curItem.showEvents)
+            {
+                if(c.Key != "0")
+                    itemMainInfo.Find("Controller").GetComponent<DropdownController>().InsertNewInputField(c.Key, c.Value);
             }
         }
     }
@@ -156,7 +167,7 @@ public class BodyController : MonoBehaviour
 
         for (int i = 0; i < conditions.childCount; i++)
         {
-            if (conditions.GetChild(i).gameObject.name != "NewDropdown")
+            if (conditions.GetChild(i).gameObject.name != "NewInputField")
                 dList.Add(conditions.GetChild(i).gameObject);
         }
 

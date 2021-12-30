@@ -1,1 +1,1 @@
-{"target":[{"code":"temp1","name":"임시 아이템이다.","explain":"아이템 그렇게 만드는 거 아닌데","statDegreeKeys":[],"statDegreeValues":[],"showEventsKeys":["0"],"showEventsValues":[true]}]}
+{"target":[{"code":"temp1","name":"임시 아이템이다.","explain":"아이템 그렇게 만드는 거 아닌데","isConsume":false,"isShownAllScenes":false,"statDegreeKeys":["HP","POWER"],"statDegreeValues":[2,5],"showEventsKeys":["0","1-5","2-5-3"],"showEventsValues":[true,true,true]}]}

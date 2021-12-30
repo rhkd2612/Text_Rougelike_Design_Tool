@@ -10,10 +10,11 @@ public class DropdownController : MonoBehaviour
     public ItemManager itemManager;
     public CharManager charManager;
     public Transform par;
+    public Transform inputfieldPar;
     public GameObject newDropdownObj;
     public GameObject dropdownPref;
-
-    public bool isModify = false;
+    public GameObject newInputfieldObj;
+    public GameObject inputfieldPref;
 
     [SerializeField]
     private Dropdown statDropdown;
@@ -26,12 +27,6 @@ public class DropdownController : MonoBehaviour
 
     void Start()
     {
-        if (isModify)
-        {
-            //itemManager.curItem = (Item)JsonManager.Instance.itemsList[itemManager.curItem.code];
-            //charManager.curCharacter = (Character)JsonManager.Instance.charsList[charManager.curCharacter.code];
-        }
-
         statDropdown = newDropdownObj.transform.Find("stat").GetComponent<Dropdown>();
         degreeDropdown = newDropdownObj.transform.Find("degree").GetComponent<Dropdown>();
         AddDropdownOptions();
@@ -56,6 +51,11 @@ public class DropdownController : MonoBehaviour
     {
         statDropdown.value = 0;
         degreeDropdown.value = 0;
+    }
+
+    void ResetNewInputField()
+    {
+        newInputfieldObj.transform.Find("InputField").GetComponent<InputField>().text = string.Empty;
     }
 
     public void InsertNewDropdown()
@@ -144,6 +144,43 @@ public class DropdownController : MonoBehaviour
         newPref.SetActive(true);
     }
 
+    public void InsertNewInputField()
+    {
+        int pos = newInputfieldObj.transform.GetSiblingIndex();
+        string nText = newInputfieldObj.transform.Find("InputField").GetComponent<InputField>().text;
+
+        if (nText == string.Empty || itemManager.curItem.showEvents.ContainsKey(nText))
+        {
+            Debug.Log("Text is Empty or Already exist key");
+            return;
+        }
+
+        if (itemManager.curItem.code == string.Empty || itemManager.curItem.name == string.Empty || itemManager.curItem.explain == string.Empty)
+        {
+            Debug.Log("Failed Create, Code, Name or Explain is empty.");
+            return;
+        }
+
+        GameObject newPref = Instantiate(inputfieldPref, inputfieldPar);
+        newPref.transform.SetSiblingIndex(pos);
+        newPref.transform.Find("InputField").GetComponent<InputField>().text = nText;
+        newPref.SetActive(true);
+
+        itemManager.curItem.showEvents[nText] = true;
+
+        ResetNewInputField();
+    }
+
+    public void InsertNewInputField(string st, bool b)
+    {
+        int pos = newInputfieldObj.transform.GetSiblingIndex();;
+
+        GameObject newPref = Instantiate(inputfieldPref, inputfieldPar);
+        newPref.transform.SetSiblingIndex(pos);
+        newPref.transform.Find("InputField").GetComponent<InputField>().text = st;
+        newPref.SetActive(true);
+    }
+
     public void ModifyDropdownValue(Transform tr)
     {
         switch (status)
@@ -160,21 +197,29 @@ public class DropdownController : MonoBehaviour
                 break;
         }
     }
+
     public void DeleteDropdown(Transform tr)
     {
         switch (status)
         {
             case STATUS.ITEM:
-                itemManager.curItem.statDegree[tr.Find("Text").GetComponent<Text>().text] = 0;
+                itemManager.curItem.statDegree.Remove(tr.Find("Text").GetComponent<Text>().text);
                 break;
             case STATUS.CHARACTER:
-                charManager.curCharacter.statDegree[tr.Find("Text").GetComponent<Text>().text] = 0;
+                charManager.curCharacter.statDegree.Remove(tr.Find("Text").GetComponent<Text>().text);
                 break;
         }
 
         Destroy(tr.gameObject);
 
         ResetNewDropDown();
+    }
+
+    public void DeleteInputField(Transform tr)
+    {
+        itemManager.curItem.showEvents.Remove(tr.Find("InputField").GetComponent<InputField>().text);
+
+        Destroy(tr.gameObject);
     }
 
     public void SetStat(int i)

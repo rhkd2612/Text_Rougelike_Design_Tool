@@ -136,6 +136,7 @@ public class Item : Info
         Debug.Log("Name = " + name);
         Debug.Log("Explain = " + explain);
         Debug.Log("isConsume = " + isConsume);
+        Debug.Log("isShownAllScenes" + isShownAllScenes);
 
         if (statDegree.Count > 0)
             foreach (var idx in statDegree)
