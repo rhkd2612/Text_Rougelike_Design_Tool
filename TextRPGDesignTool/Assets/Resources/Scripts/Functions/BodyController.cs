@@ -165,6 +165,8 @@ public class BodyController : MonoBehaviour
                 dList.Add(stats.GetChild(i).gameObject);
         }
 
+        Debug.Log(conditions.childCount);
+
         for (int i = 0; i < conditions.childCount; i++)
         {
             if (conditions.GetChild(i).gameObject.name != "NewInputField")

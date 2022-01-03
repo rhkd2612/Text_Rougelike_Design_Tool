@@ -5976,7 +5976,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &376942983
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7338,7 +7338,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &461169965
 RectTransform:
   m_ObjectHideFlags: 0
@@ -23981,7 +23981,7 @@ PrefabInstance:
     - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: ShutIteminfo
+      value: ShutItemInfo
       objectReference: {fileID: 0}
     - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
         type: 3}
@@ -25125,7 +25125,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1453624528
 RectTransform:
   m_ObjectHideFlags: 0
@@ -30214,7 +30214,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 930941520}
+      - m_Target: {fileID: 376241848}
         m_MethodName: InsertNewInputField
         m_Mode: 1
         m_Arguments:
@@ -31865,7 +31865,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1853631573
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31966,7 +31966,7 @@ PrefabInstance:
     - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: ShutIteminfo
+      value: ShutItemInfo
       objectReference: {fileID: 0}
     - target: {fileID: 8094136297809270680, guid: cdea31cc7529fc740b66e1c28bcba8f6,
         type: 3}

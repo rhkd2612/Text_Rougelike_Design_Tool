@@ -25,7 +25,7 @@ public class DropdownController : MonoBehaviour
     int statCount = 0;
     int degreeCount = 0;
 
-    void Start()
+    void OnEnable()
     {
         statDropdown = newDropdownObj.transform.Find("stat").GetComponent<Dropdown>();
         degreeDropdown = newDropdownObj.transform.Find("degree").GetComponent<Dropdown>();
@@ -149,9 +149,17 @@ public class DropdownController : MonoBehaviour
         int pos = newInputfieldObj.transform.GetSiblingIndex();
         string nText = newInputfieldObj.transform.Find("InputField").GetComponent<InputField>().text;
 
-        if (nText == string.Empty || itemManager.curItem.showEvents.ContainsKey(nText))
+        Debug.Log(nText);
+
+        if (nText == string.Empty)
         {
-            Debug.Log("Text is Empty or Already exist key");
+            Debug.Log("Text is Empty");
+            return;
+        }
+
+        if (itemManager.curItem.showEvents.ContainsKey(nText))
+        {
+            Debug.Log(string.Format("Text {0} is already exists.",nText));
             return;
         }
 
@@ -173,7 +181,7 @@ public class DropdownController : MonoBehaviour
 
     public void InsertNewInputField(string st, bool b)
     {
-        int pos = newInputfieldObj.transform.GetSiblingIndex();;
+        int pos = newInputfieldObj.transform.GetSiblingIndex(); ;
 
         GameObject newPref = Instantiate(inputfieldPref, inputfieldPar);
         newPref.transform.SetSiblingIndex(pos);

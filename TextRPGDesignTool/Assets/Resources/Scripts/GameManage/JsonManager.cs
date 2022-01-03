@@ -94,8 +94,6 @@ public class Item : Info
         statDegree = new SortedList<string, int>();
         showEvents = new SortedList<string, bool>();
 
-        showEvents["0"] = true;
-
         statDegreeKeys = new List<string>();
         statDegreeValues = new List<int>();
 
