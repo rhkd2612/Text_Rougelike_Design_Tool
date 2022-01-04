@@ -70,6 +70,42 @@ public class Stat : Info
 }
 
 [System.Serializable]
+public class Event : Info
+{
+    public string selection;
+
+    public Event()
+    {
+        code = "";
+        name = "";
+        explain = "";
+        selection = "";
+    }
+
+    public Event(string c, string n, string e, string s)
+    {
+        code = c;
+        name = n;
+        explain = e;
+        selection = s;
+    }
+
+    public override void Print()
+    {
+        Debug.Log("Code = " + code);
+        Debug.Log("Name = " + name);
+        Debug.Log("Explain = " + explain);
+        Debug.Log("Selection = " + selection);
+    }
+
+    public override void Serialize()
+    {
+
+    }
+}
+
+
+[System.Serializable]
 public class Item : Info
 {
     public bool isConsume = false;
@@ -294,16 +330,19 @@ public class JsonManager : MonoBehaviour
     public SortedList<string, Info> statsList;
     public SortedList<string, Info> itemsList;
     public SortedList<string, Info> charsList;
+    public SortedList<string, Info> eventsList;
 
     List<Stat> jStatList = new List<Stat>();
     List<Item> jItemList = new List<Item>();
     List<Character> jCharList = new List<Character>();
+    List<Event> jEventList = new List<Event>();
 
     public List<SortedList<string, Info>> sLists = new List<SortedList<string, Info>>();
 
     public string statFileName = "StatInfo";
     public string itemFileName = "ItemsInfo";
     public string charFileName = "CharsInfo";
+    public string eventFileName = "EventsInfo";
 
 
     public static JsonManager Instance
@@ -329,10 +368,12 @@ public class JsonManager : MonoBehaviour
         statsList = new SortedList<string, Info>();
         itemsList = new SortedList<string, Info>();
         charsList = new SortedList<string, Info>();
+        eventsList = new SortedList<string, Info>();
 
         sLists.Add(statsList);
         sLists.Add(itemsList);
         sLists.Add(charsList);
+        sLists.Add(eventsList);
 
         if (System.IO.File.Exists(string.Format("{0}/{1}.json", Application.dataPath, statFileName)))
         {
@@ -393,6 +434,26 @@ public class JsonManager : MonoBehaviour
             Debug.Log("CharJsonFile Not Exist");
 
             charsList["백수"] = new Character("백수", "임시 직업이다.", "직업 그렇게 만드는 거 아닌데", null, null);
+        }
+
+        if (System.IO.File.Exists(string.Format("{0}/{1}.json", Application.dataPath, eventFileName)))
+        {
+            Debug.Log("EventJsonFile Exists");
+
+            var str = LoadJsonFileWithString(Application.dataPath, eventFileName);
+            jEventList = JsonUtility.FromJson<Serialization<Event>>(str).ToList();
+
+            foreach (var e in jEventList)
+            {
+                e.DeSerialize();
+                eventsList.Add(e.code, e);
+            }
+        }
+        else
+        {
+            Debug.Log("EventJsonFile Not Exist");
+
+            eventsList["1-1"] = new Event("1-1", "의문의 방", "의문의 방이다\n 왠지싸늘하다\n \"어라.. 여긴 어디..?\"", "[1:주위를 둘러본다][2:문으로나간다]");
         }
     }
 
@@ -479,6 +540,21 @@ public class JsonManager : MonoBehaviour
         jsonData = ObjectToJson(new Serialization<Character>(jCharList));
         CreateJsonFile(Application.dataPath, charFileName, jsonData);
         #endregion
+
+        #region EVENT_SAVE
+        foreach (var cur in eventsList)
+        {
+            Event iCur = (Event)cur.Value;
+            iCur.Serialize();
+
+            iCur.Print();
+
+            jEventList.Add(iCur);
+        }
+
+        jsonData = ObjectToJson(new Serialization<Event>(jEventList));
+        CreateJsonFile(Application.dataPath, eventFileName, jsonData);
+        #endregion
     }
 
     void DeleteAllFiles()
@@ -486,6 +562,7 @@ public class JsonManager : MonoBehaviour
         jStatList = new List<Stat>();
         jItemList = new List<Item>();
         jCharList = new List<Character>();
+        jEventList = new List<Event>();
 
         if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, statFileName)))
             File.Delete(string.Format("{0}/{1}.json", Application.dataPath, statFileName));
@@ -495,5 +572,8 @@ public class JsonManager : MonoBehaviour
 
         if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, charFileName)))
             File.Delete(string.Format("{0}/{1}.json", Application.dataPath, charFileName));
+
+        if (File.Exists(string.Format("{0}/{1}.json", Application.dataPath, eventFileName)))
+            File.Delete(string.Format("{0}/{1}.json", Application.dataPath, eventFileName));
     }
 }

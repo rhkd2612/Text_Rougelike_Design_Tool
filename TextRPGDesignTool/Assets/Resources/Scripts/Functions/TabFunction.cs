@@ -24,9 +24,8 @@ public class TabFunction : MonoBehaviour
                 inputfields[count % inputfields.Length].ActivateInputField();
             }
 
-            if (Input.GetKeyDown(KeyCode.Return))
-                createButton.onClick.Invoke();
-
+            //if (Input.GetKeyDown(KeyCode.Return))
+                //createButton.onClick.Invoke();
         }
     }
 }

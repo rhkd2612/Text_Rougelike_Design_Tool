@@ -23,6 +23,7 @@ public class BodyController : MonoBehaviour
 
     public Transform itemMainInfo;
     public Transform charMainInfo;
+    public Transform eventMainInfo;
 
     int bodyCount;
 
@@ -219,5 +220,16 @@ public class BodyController : MonoBehaviour
         if (dList.Count > 0)
             foreach (var d in dList)
                 Destroy(d);
+    }
+
+    public void ShowEventInfo(Transform tr)
+    {
+        Event curEvent = (Event)JsonManager.Instance.eventsList[tr.Find("Code").GetComponent<Text>().text];
+
+        eventMainInfo.gameObject.SetActive(true);
+        eventMainInfo.Find("InputFields").Find("code").GetComponent<InputField>().text = curEvent.code;
+        eventMainInfo.Find("InputFields").Find("name").GetComponent<InputField>().text = curEvent.name;
+        eventMainInfo.Find("InputFields").Find("ingame_explain").GetComponent<InputField>().text = curEvent.explain;
+        eventMainInfo.Find("InputFields").Find("selection").GetComponent<InputField>().text = curEvent.selection;
     }
 }

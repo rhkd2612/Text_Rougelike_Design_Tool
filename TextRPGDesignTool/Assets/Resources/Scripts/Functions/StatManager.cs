@@ -7,7 +7,6 @@ public class StatManager : MonoBehaviour
 {
     public GameObject statPopup;
     public Stat curStat = new Stat();
-    private string lastName = "";
 
     private void CurStatClear()
     {
