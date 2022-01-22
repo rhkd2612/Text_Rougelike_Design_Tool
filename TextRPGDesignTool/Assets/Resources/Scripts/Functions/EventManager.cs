@@ -66,7 +66,7 @@ public class EventManager : MonoBehaviour
         JsonManager.Instance.eventsList[curEvent.code] = curEvent;
 
         JsonManager.Instance.eventsList[curEvent.code].Print();
-
+        BodyController.Instance.ModifyBody(curEvent, STATUS.EVENT);
         CurEventClear();
         eventPopup.SetActive(false);
     }

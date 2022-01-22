@@ -73,6 +73,13 @@ public class Stat : Info
 public class Event : Info
 {
     public string selection;
+    public bool onlyOneTimeShown;
+    public SortedList<string, bool> showEvents;
+
+    [SerializeField]
+    public List<string> showEventsKeys;
+    [SerializeField]
+    public List<bool> showEventsValues;
 
     public Event()
     {

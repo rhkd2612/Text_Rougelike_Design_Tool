@@ -81,10 +81,9 @@ public class ItemManager : MonoBehaviour
 
         JsonManager.Instance.itemsList[curItem.code] = curItem;
         JsonManager.Instance.itemsList[curItem.code].Print();
-
+        BodyController.Instance.ModifyBody(curItem, STATUS.ITEM);
 
         CurItemClear();
-
         itemPopup.SetActive(false);
     }
 }

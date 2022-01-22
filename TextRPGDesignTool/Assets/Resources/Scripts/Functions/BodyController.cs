@@ -100,6 +100,34 @@ public class BodyController : MonoBehaviour
         }
     }
 
+    public void ModifyBody(Info cur, STATUS status)
+    {
+        foreach(Transform c in infoPars[(int)status])
+        {
+            if(c.Find("Code").GetComponent<Text>().text == cur.code)
+            {
+                c.Find("Name").GetComponent<Text>().text = cur.name;
+                c.Find("Explain").GetComponent<InputField>().text = cur.explain;
+                c.GetComponent<ModifyController>().SetList();
+
+                switch (status)
+                {
+                    case STATUS.STAT:
+                        c.Find("Toggle").GetComponent<Toggle>().isOn = ((Stat)cur).isDefaultStat;
+                        break;
+                    case STATUS.ITEM:
+                        break;
+                    case STATUS.CHARACTER:
+                        break;
+                    case STATUS.EVENT:
+                        break;
+                }
+
+                break;
+            }
+        }
+    }
+
     public void SetStatus(int i)
     {
         curStatus = (STATUS)i;

@@ -69,7 +69,7 @@ public class CharManager : MonoBehaviour
 
         JsonManager.Instance.charsList[curCharacter.code] = curCharacter;
         JsonManager.Instance.charsList[curCharacter.code].Print();
-
+        BodyController.Instance.ModifyBody(curCharacter, STATUS.CHARACTER);
 
         CurCharacterClear();
 
