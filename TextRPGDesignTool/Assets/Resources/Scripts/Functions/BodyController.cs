@@ -228,21 +228,24 @@ public class BodyController : MonoBehaviour
         Transform stats = charPopup.Find("Stat");
         Transform conditions = charPopup.Find("Condition");
 
-        if (stats.childCount == 0)
-            return;
-
         List<GameObject> dList = new List<GameObject>();
 
-        for (int i = 0; i < stats.childCount; i++)
+        if (stats.childCount != 0)
         {
-            if (stats.GetChild(i).gameObject.name != "NewDropdown")
-                dList.Add(stats.GetChild(i).gameObject);
+            for (int i = 0; i < stats.childCount; i++)
+            {
+                if (stats.GetChild(i).gameObject.name != "NewDropdown")
+                    dList.Add(stats.GetChild(i).gameObject);
+            }
         }
 
-        for (int i = 0; i < conditions.childCount; i++)
+        if (conditions.childCount != 0)
         {
-            if (conditions.GetChild(i).gameObject.name != "NewDropdown")
-                dList.Add(conditions.GetChild(i).gameObject);
+            for (int i = 0; i < conditions.childCount; i++)
+            {
+                if (conditions.GetChild(i).gameObject.name != "NewDropdown")
+                    dList.Add(conditions.GetChild(i).gameObject);
+            }
         }
 
         if (dList.Count > 0)
@@ -259,5 +262,35 @@ public class BodyController : MonoBehaviour
         eventMainInfo.Find("InputFields").Find("name").GetComponent<InputField>().text = curEvent.name;
         eventMainInfo.Find("InputFields").Find("ingame_explain").GetComponent<InputField>().text = curEvent.explain;
         eventMainInfo.Find("InputFields").Find("selection").GetComponent<InputField>().text = curEvent.selection;
+        eventMainInfo.Find("OneTime").Find("Toggle").GetComponent<Toggle>().isOn = curEvent.onlyOneTimeShown;
+
+        if (curEvent.showEvents.Count > 0)
+        {
+            foreach (var c in curEvent.showEvents)
+            {
+                if (c.Key != "0")
+                    eventMainInfo.Find("Controller").GetComponent<DropdownController>().InsertNewInputField(c.Key, c.Value);
+            }
+        }
+    }
+
+    public void ShutEventInfo(Transform eventPopup)
+    {
+        Transform conditions = eventPopup.Find("Condition");
+
+        List<GameObject> dList = new List<GameObject>();
+
+        if (conditions.childCount != 0)
+        {
+            for (int i = 0; i < conditions.childCount; i++)
+            {
+                if (conditions.GetChild(i).gameObject.name != "NewInputField")
+                    dList.Add(conditions.GetChild(i).gameObject);
+            }
+        }
+
+        if (dList.Count > 0)
+            foreach (var d in dList)
+                Destroy(d);
     }
 }

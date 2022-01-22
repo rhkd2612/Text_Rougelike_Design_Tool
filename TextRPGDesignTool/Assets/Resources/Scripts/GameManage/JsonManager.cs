@@ -87,14 +87,22 @@ public class Event : Info
         name = "";
         explain = "";
         selection = "";
+        onlyOneTimeShown = true;
+        showEvents = new SortedList<string, bool>();
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
     }
 
-    public Event(string c, string n, string e, string s)
+    public Event(string c, string n, string e, string s, bool ots = true)
     {
         code = c;
         name = n;
         explain = e;
         selection = s;
+        onlyOneTimeShown = ots;
+        showEvents = new SortedList<string, bool>();
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
     }
 
     public override void Print()
@@ -103,11 +111,30 @@ public class Event : Info
         Debug.Log("Name = " + name);
         Debug.Log("Explain = " + explain);
         Debug.Log("Selection = " + selection);
+
+        if (showEvents.Count > 0)
+            foreach (var idx in showEvents)
+            {
+                Debug.Log(string.Format("showEvents[{0}] = {1}", idx.Key, idx.Value));
+            }
     }
 
     public override void Serialize()
     {
+        showEventsKeys = new List<string>();
+        showEventsValues = new List<bool>();
 
+        foreach (var c in showEvents)
+        {
+            showEventsKeys.Add(c.Key);
+            showEventsValues.Add(c.Value);
+        }
+    }
+
+    public override void DeSerialize()
+    {
+        for (int i = 0; i < showEventsKeys.Count; i++)
+            showEvents[showEventsKeys[i]] = showEventsValues[i];
     }
 }
 
@@ -460,7 +487,7 @@ public class JsonManager : MonoBehaviour
         {
             Debug.Log("EventJsonFile Not Exist");
 
-            eventsList["1-1"] = new Event("1-1", "의문의 방", "의문의 방이다\n 왠지싸늘하다\n \"어라.. 여긴 어디..?\"", "[1:주위를 둘러본다][2:문으로나간다]");
+            eventsList["1-1"] = new Event("1-1", "의문의 방", "의문의 방이다\n 왠지싸늘하다\n \"어라.. 여긴 어디..?\"", "[1:주위를 둘러본다][2:문으로나간다]",true);
         }
     }
 

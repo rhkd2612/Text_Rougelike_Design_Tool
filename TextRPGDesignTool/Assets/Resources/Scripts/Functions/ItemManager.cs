@@ -50,9 +50,9 @@ public class ItemManager : MonoBehaviour
         curItem.statDegree[stat] = degree;
     }
 
-    public void ItemConditionInsert(string stat, int degree)
+    public void ItemConditionInsert(string stat, bool b)
     {
-        curItem.statDegree[stat] = degree;
+        curItem.showEvents[stat] = b;
     }
 
     public void RemoveItem(Transform tr)

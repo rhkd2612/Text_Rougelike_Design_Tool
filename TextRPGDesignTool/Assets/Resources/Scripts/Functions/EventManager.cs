@@ -20,6 +20,13 @@ public class EventManager : MonoBehaviour
         Debug.Log("yes1");
     }
 
+    public void ModifyEventSelect(Transform tr)
+    {
+        curEvent = (Event)JsonManager.Instance.eventsList[tr.Find("Code").GetComponent<Text>().text];
+
+        curEvent.Print();
+    }
+
     public void SetEventName(string name)
     {
         curEvent.name = name;
@@ -37,6 +44,11 @@ public class EventManager : MonoBehaviour
         curEvent.selection = select;
 
         Debug.Log("yes4");
+    }
+
+    public void SetEventShowOneTime(bool isShowOneTime)
+    {
+        curEvent.onlyOneTimeShown = isShowOneTime;
     }
 
     public void RemoveEvent(Transform tr)
